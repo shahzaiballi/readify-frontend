@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../presentation/profile/pages/edit_profile_page.dart';
+import '../../presentation/profile/pages/change_password_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,6 +121,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'home',
         builder: (context, state) => const HomePage(),
       ),
+      GoRoute(
+  path: '/profile/edit',
+  name: 'edit_profile',
+  builder: (context, state) => const EditProfilePage(),
+),
+GoRoute(
+  path: '/profile/change_password',
+  name: 'change_password',
+  builder: (context, state) => const ChangePasswordPage(),
+),
       GoRoute(
         path: '/all_books/:category',
         name: 'all_books',
