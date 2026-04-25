@@ -21,11 +21,10 @@ class BookDetailEntity extends BookEntity {
     super.badge,
     required this.description,
     required this.totalChapters,
-    required this.progressPercent,
+    required this.progressPercent ,
     required this.daysLeftToFinish,
     required this.pagesLeft,
     required this.flashcardsCount,
     required this.readPerDayMinutes,
   });
 }
-

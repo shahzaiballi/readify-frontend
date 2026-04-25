@@ -7,7 +7,7 @@ enum LibraryStatus {
 }
 
 class LibraryBookEntity extends BookEntity {
-  final int progressPercent;
+  final double progressPercent;
   final bool isFavorite;
   final LibraryStatus status;
 
@@ -21,7 +21,7 @@ class LibraryBookEntity extends BookEntity {
     required super.category,
     super.hasAudio,
     super.badge,
-    this.progressPercent = 0,
+    this.progressPercent = 0.0,
     this.isFavorite = false,
     this.status = LibraryStatus.notStarted,
   });
@@ -37,7 +37,7 @@ class LibraryBookEntity extends BookEntity {
     String? category,
     bool? hasAudio,
     String? badge,
-    int? progressPercent,
+    double? progressPercent,
     bool? isFavorite,
     LibraryStatus? status,
   }) {
@@ -57,4 +57,3 @@ class LibraryBookEntity extends BookEntity {
     );
   }
 }
-

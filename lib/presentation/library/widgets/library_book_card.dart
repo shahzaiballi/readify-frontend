@@ -1,10 +1,9 @@
-// ENHANCED UI: Premium library book card with animated interactions,
-// polished progress display, and smooth press feedback
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../domain/entities/library_book_entity.dart';
-import '../../../../core/utils/responsive_utils.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/utils/responsive_utils.dart';
+import '../../../../domain/entities/library_book_entity.dart';
 import '../controllers/library_state_provider.dart';
 
 class LibraryBookCard extends ConsumerStatefulWidget {
@@ -18,7 +17,6 @@ class LibraryBookCard extends ConsumerStatefulWidget {
 
 class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
     with SingleTickerProviderStateMixin {
-  // ENHANCED UI: Press animation
   late AnimationController _pressCtrl;
   late Animation<double> _scale;
   bool _imageLoaded = false;
@@ -46,6 +44,8 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
     final isFavorite =
         ref.watch(favoriteBooksProvider).contains(widget.book.id);
 
+    final progress = widget.book.progressPercent.clamp(0.0, 100.0);
+
     return GestureDetector(
       onTapDown: (_) => _pressCtrl.forward(),
       onTapUp: (_) {
@@ -55,8 +55,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
       onTapCancel: () => _pressCtrl.reverse(),
       child: AnimatedBuilder(
         animation: _scale,
-        builder: (_, child) =>
-            Transform.scale(scale: _scale.value, child: child),
+        builder: (_, child) => Transform.scale(scale: _scale.value, child: child),
         child: Container(
           margin: EdgeInsets.symmetric(
             horizontal: context.responsive.wp(20),
@@ -64,8 +63,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
           ),
           decoration: BoxDecoration(
             color: const Color(0xFF161B2E),
-            borderRadius:
-                BorderRadius.circular(context.responsive.sp(20)),
+            borderRadius: BorderRadius.circular(context.responsive.sp(20)),
             border: Border.all(
               color: Colors.white.withOpacity(0.06),
               width: 1,
@@ -83,10 +81,8 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ENHANCED UI: Book cover with shimmer loader
                 ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(context.responsive.sp(12)),
+                  borderRadius: BorderRadius.circular(context.responsive.sp(12)),
                   child: Stack(
                     children: [
                       if (!_imageLoaded)
@@ -102,8 +98,8 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                         frameBuilder: (_, child, frame, __) {
                           if (frame != null && !_imageLoaded) {
                             WidgetsBinding.instance.addPostFrameCallback(
-                                (_) =>
-                                    setState(() => _imageLoaded = true));
+                              (_) => setState(() => _imageLoaded = true),
+                            );
                           }
                           return AnimatedOpacity(
                             opacity: frame == null ? 0 : 1,
@@ -115,22 +111,21 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           height: context.responsive.sp(102),
                           width: context.responsive.wp(68),
                           color: const Color(0xFF1E233D),
-                          child: Icon(Icons.book,
-                              color: Colors.white24,
-                              size: context.responsive.sp(28)),
+                          child: Icon(
+                            Icons.book,
+                            color: Colors.white24,
+                            size: context.responsive.sp(28),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-
                 SizedBox(width: context.responsive.wp(14)),
-
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title row with action buttons
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -163,20 +158,15 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                               ],
                             ),
                           ),
-
-                          // ENHANCED UI: Action buttons
                           Row(
                             children: [
-                              // ENHANCED UI: Animated favorite button
                               GestureDetector(
                                 onTap: () => ref
                                     .read(favoriteBooksProvider.notifier)
                                     .toggleFavorite(widget.book.id),
                                 child: AnimatedContainer(
-                                  duration:
-                                      const Duration(milliseconds: 250),
-                                  padding: EdgeInsets.all(
-                                      context.responsive.sp(7)),
+                                  duration: const Duration(milliseconds: 250),
+                                  padding: EdgeInsets.all(context.responsive.sp(7)),
                                   decoration: BoxDecoration(
                                     color: isFavorite
                                         ? Colors.redAccent.withOpacity(0.15)
@@ -184,11 +174,9 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                     shape: BoxShape.circle,
                                   ),
                                   child: AnimatedSwitcher(
-                                    duration:
-                                        const Duration(milliseconds: 250),
+                                    duration: const Duration(milliseconds: 250),
                                     transitionBuilder: (child, anim) =>
-                                        ScaleTransition(
-                                            scale: anim, child: child),
+                                        ScaleTransition(scale: anim, child: child),
                                     child: Icon(
                                       isFavorite
                                           ? Icons.favorite_rounded
@@ -202,15 +190,11 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                   ),
                                 ),
                               ),
-
                               SizedBox(width: context.responsive.wp(6)),
-
                               GestureDetector(
-                                onTap: () =>
-                                    _showDeleteConfirm(context, ref),
+                                onTap: () => _showDeleteConfirm(context, ref),
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                      context.responsive.sp(7)),
+                                  padding: EdgeInsets.all(context.responsive.sp(7)),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.05),
                                     shape: BoxShape.circle,
@@ -226,15 +210,9 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           ),
                         ],
                       ),
-
                       SizedBox(height: context.responsive.sp(14)),
-
-                      // ENHANCED UI: Status badge
                       _StatusBadge(status: widget.book.status),
-
                       SizedBox(height: context.responsive.sp(10)),
-
-                      // ENHANCED UI: Enhanced progress bar
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -246,7 +224,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                             ),
                           ),
                           Text(
-                            '${widget.book.progressPercent}%',
+                            '${progress.round()}%',
                             style: TextStyle(
                               color: const Color(0xFFB062FF),
                               fontSize: context.responsive.sp(11),
@@ -256,8 +234,6 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                         ],
                       ),
                       SizedBox(height: context.responsive.sp(6)),
-
-                      // ENHANCED UI: Gradient progress bar
                       Stack(
                         children: [
                           Container(
@@ -268,20 +244,21 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                             ),
                           ),
                           FractionallySizedBox(
-                            widthFactor:
-                                widget.book.progressPercent / 100,
+                            widthFactor: progress / 100,
                             child: Container(
                               height: context.responsive.sp(4),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [
-                                  Color(0xFFB062FF),
-                                  Color(0xFF7B2FFF),
-                                ]),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFB062FF),
+                                    Color(0xFF7B2FFF),
+                                  ],
+                                ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFB062FF)
-                                        .withOpacity(0.4),
+                                    color:
+                                        const Color(0xFFB062FF).withOpacity(0.4),
                                     blurRadius: 6,
                                   ),
                                 ],
@@ -290,15 +267,11 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           ),
                         ],
                       ),
-
                       SizedBox(height: context.responsive.sp(10)),
-
-                      // ENHANCED UI: Continue button
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: () => context
-                              .push('/book_detail/${widget.book.id}'),
+                          onTap: () => context.push('/book_detail/${widget.book.id}'),
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: context.responsive.wp(14),
@@ -309,7 +282,8 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                 colors: [Color(0xFF9146FF), Color(0xFF3861FB)],
                               ),
                               borderRadius: BorderRadius.circular(
-                                  context.responsive.sp(20)),
+                                context.responsive.sp(20),
+                              ),
                             ),
                             child: Text(
                               'Continue',
@@ -342,8 +316,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
         padding: EdgeInsets.all(context.responsive.sp(24)),
         decoration: BoxDecoration(
           color: const Color(0xFF1E233D),
-          borderRadius:
-              BorderRadius.circular(context.responsive.sp(24)),
+          borderRadius: BorderRadius.circular(context.responsive.sp(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -357,8 +330,11 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
               ),
             ),
             SizedBox(height: context.responsive.sp(20)),
-            Icon(Icons.delete_forever_rounded,
-                color: Colors.redAccent, size: context.responsive.sp(36)),
+            Icon(
+              Icons.delete_forever_rounded,
+              color: Colors.redAccent,
+              size: context.responsive.sp(36),
+            ),
             SizedBox(height: context.responsive.sp(16)),
             Text(
               'Remove Book?',
@@ -372,8 +348,9 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
             Text(
               'This will remove "${widget.book.title}" from your library.',
               style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: context.responsive.sp(13)),
+                color: Colors.white54,
+                fontSize: context.responsive.sp(13),
+              ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: context.responsive.sp(24)),
@@ -384,19 +361,23 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                     onTap: () => Navigator.of(ctx).pop(),
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                          vertical: context.responsive.sp(14)),
+                        vertical: context.responsive.sp(14),
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(
-                            context.responsive.sp(14)),
+                          context.responsive.sp(14),
+                        ),
                       ),
-                      child: Text('Cancel',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.responsive.sp(14),
-                          )),
+                      child: Text(
+                        'Cancel',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
+                          fontSize: context.responsive.sp(14),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -411,11 +392,13 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                          vertical: context.responsive.sp(14)),
+                        vertical: context.responsive.sp(14),
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.redAccent,
                         borderRadius: BorderRadius.circular(
-                            context.responsive.sp(14)),
+                          context.responsive.sp(14),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.redAccent.withOpacity(0.3),
@@ -423,13 +406,15 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           ),
                         ],
                       ),
-                      child: Text('Remove',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.responsive.sp(14),
-                          )),
+                      child: Text(
+                        'Remove',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.responsive.sp(14),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -442,9 +427,9 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
   }
 }
 
-// ENHANCED UI: Status badge widget
 class _StatusBadge extends StatelessWidget {
   final LibraryStatus status;
+
   const _StatusBadge({required this.status});
 
   @override
@@ -500,10 +485,10 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-// ENHANCED UI: Shimmer placeholder
 class _ShimmerBox extends StatefulWidget {
   final double width;
   final double height;
+
   const _ShimmerBox({required this.width, required this.height});
 
   @override
@@ -519,10 +504,12 @@ class _ShimmerBoxState extends State<_ShimmerBox>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1400))
-      ..repeat();
-    _anim = Tween<double>(begin: -2, end: 2)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
+    _anim = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -542,11 +529,14 @@ class _ShimmerBoxState extends State<_ShimmerBox>
           gradient: LinearGradient(
             begin: Alignment(_anim.value - 1, 0),
             end: Alignment(_anim.value, 0),
-            colors: const [Color(0xFF1A1F36), Color(0xFF232840), Color(0xFF1A1F36)],
+            colors: const [
+              Color(0xFF1A1F36),
+              Color(0xFF232840),
+              Color(0xFF1A1F36),
+            ],
           ),
         ),
       ),
     );
   }
 }
-

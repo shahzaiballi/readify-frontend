@@ -12,54 +12,72 @@ import '../network/api_client.dart';
 class BookRepositoryImpl implements BookRepository {
   final ApiClient _api = ApiClient.instance;
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-  BookEntity _bookFromJson(Map<String, dynamic> json) {
-  return BookEntity(
-    id: json['id'].toString(),
-    title: json['title'] ?? '',
-    author: json['author'] ?? '',
-    imageUrl: json['imageUrl'] ?? '',
-    // FIXED: Handle string ratings safely
-    rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
-    readersCount: json['readersCount']?.toString() ?? '0',
-    category: json['category'] ?? '',
-    hasAudio: json['hasAudio'] ?? false,
-    badge: json['badge'] as String?,
-  );
-}
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
 
-BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
-  return BookDetailEntity(
-    id: json['id'].toString(),
-    title: json['title'] ?? '',
-    author: json['author'] ?? '',
-    imageUrl: json['imageUrl'] ?? '',
-    // FIXED: Handle string ratings safely
-    rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
-    readersCount: json['readersCount']?.toString() ?? '0',
-    category: json['category'] ?? '',
-    hasAudio: json['hasAudio'] ?? false,
-    badge: json['badge'] as String?,
-    description: json['description'] ?? '',
-    totalChapters: json['totalChapters'] ?? 0,
-    progressPercent: json['progressPercent'] ?? 0,
-    daysLeftToFinish: json['daysLeftToFinish'] ?? 0,
-    pagesLeft: json['pagesLeft'] ?? 0,
-    flashcardsCount: json['flashcardsCount'] ?? 0,
-    readPerDayMinutes: json['readPerDayMinutes'] ?? 45,
-  );
-}
+  double _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
+  }
+
+  bool _toBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    return false;
+  }
+
+  BookEntity _bookFromJson(Map<String, dynamic> json) {
+    return BookEntity(
+      id: json['id'].toString(),
+      title: json['title'] ?? '',
+      author: json['author'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      rating: _toDouble(json['rating']),
+      readersCount: json['readersCount']?.toString() ?? '0',
+      category: json['category'] ?? '',
+      hasAudio: _toBool(json['hasAudio']),
+      badge: json['badge'] as String?,
+    );
+  }
+
+  BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
+    return BookDetailEntity(
+      id: json['id'].toString(),
+      title: json['title'] ?? '',
+      author: json['author'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      rating: _toDouble(json['rating']),
+      readersCount: json['readersCount']?.toString() ?? '0',
+      category: json['category'] ?? '',
+      hasAudio: _toBool(json['hasAudio']),
+      badge: json['badge'] as String?,
+      description: json['description'] ?? '',
+      totalChapters: _toInt(json['totalChapters']),
+      progressPercent: _toInt(json['progressPercent']),
+      daysLeftToFinish: _toInt(json['daysLeftToFinish']),
+      pagesLeft: _toInt(json['pagesLeft']),
+      flashcardsCount: _toInt(json['flashcardsCount']),
+      readPerDayMinutes: _toInt(json['readPerDayMinutes']) == 0
+          ? 45
+          : _toInt(json['readPerDayMinutes']),
+    );
+  }
 
   ChapterEntity _chapterFromJson(Map<String, dynamic> json) {
     return ChapterEntity(
       id: json['id'].toString(),
       title: json['title'] ?? '',
-      chapterNumber: json['chapterNumber'] ?? 0,
-      durationInMinutes: json['durationInMinutes'] ?? 15,
+      chapterNumber: _toInt(json['chapterNumber']),
+      durationInMinutes: _toInt(json['durationInMinutes']) == 0
+          ? 15
+          : _toInt(json['durationInMinutes']),
       pageRange: json['pageRange'] ?? '',
-      isCompleted: json['isCompleted'] ?? false,
-      isActive: json['isActive'] ?? false,
-      isLocked: json['isLocked'] ?? false,
+      isCompleted: _toBool(json['isCompleted']),
+      isActive: _toBool(json['isActive']),
+      isLocked: _toBool(json['isLocked']),
     );
   }
 
@@ -67,19 +85,21 @@ BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
     return ChunkEntity(
       id: json['id'].toString(),
       text: json['text'] ?? '',
-      estimatedMinutes: json['estimatedMinutes'] ?? 2,
-      chunkIndex: json['chunkIndex'] ?? 0,
+      estimatedMinutes: _toInt(json['estimatedMinutes']) == 0
+          ? 2
+          : _toInt(json['estimatedMinutes']),
+      chunkIndex: _toInt(json['chunkIndex']),
     );
   }
 
   SummaryEntity _summaryFromJson(Map<String, dynamic> json) {
     return SummaryEntity(
       id: json['id'].toString(),
-      chapterNumber: json['chapterNumber'] ?? 0,
+      chapterNumber: _toInt(json['chapterNumber']),
       title: json['title'] ?? '',
       summaryContent: json['summaryContent'] ?? '',
       keyTakeaways: List<String>.from(json['keyTakeaways'] ?? []),
-      isLocked: json['isLocked'] ?? false,
+      isLocked: _toBool(json['isLocked']),
     );
   }
 
@@ -92,10 +112,9 @@ BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
     );
   }
 
-  // ── Books ─────────────────────────────────────────────────────────────────
   @override
   Future<List<BookEntity>> getRecommendedBooks() async {
-    final data = await _api.get('api/v1/books/recommended/') as List<dynamic>;
+    final data = await _api.get('/api/v1/books/recommended/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_bookFromJson).toList();
   }
 
@@ -120,35 +139,30 @@ BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
     return _bookDetailFromJson(data);
   }
 
-  // ── Chapters ──────────────────────────────────────────────────────────────
   @override
   Future<List<ChapterEntity>> getChapters(String bookId) async {
     final data = await _api.get('/api/v1/books/$bookId/chapters/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_chapterFromJson).toList();
   }
 
-  // ── Chunks ────────────────────────────────────────────────────────────────
   @override
   Future<List<ChunkEntity>> getChunks(String bookId, String chapterId) async {
     final data = await _api.get('/api/v1/books/$bookId/chapters/$chapterId/chunks/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_chunkFromJson).toList();
   }
 
-  // ── Summaries ─────────────────────────────────────────────────────────────
   @override
   Future<List<SummaryEntity>> getChapterSummaries(String bookId) async {
     final data = await _api.get('/api/v1/books/$bookId/summaries/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_summaryFromJson).toList();
   }
 
-  // ── Flashcards ────────────────────────────────────────────────────────────
   @override
   Future<List<FlashcardEntity>> getFlashcards(String bookId) async {
     final data = await _api.get('/api/v1/books/$bookId/flashcards/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_flashcardFromJson).toList();
   }
 
-  // ── Progress ──────────────────────────────────────────────────────────────
   @override
   Future<UserProgressEntity> getCurrentProgress() async {
     final data = await _api.get('/api/v1/reading/progress/') as Map<String, dynamic>;
@@ -157,7 +171,7 @@ BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
       title: data['title'] ?? '',
       author: data['author'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
-      progressPercent: data['progressPercent'] ?? 0,
+      progressPercent: _toInt(data['progressPercent']),
     );
   }
 
@@ -165,19 +179,14 @@ BookDetailEntity _bookDetailFromJson(Map<String, dynamic> json) {
   Future<InsightsEntity> getDailyInsights() async {
     final data = await _api.get('/api/v1/reading/insights/') as Map<String, dynamic>;
     return InsightsEntity(
-      cardsDue: data['cardsDue'] ?? 0,
-      readTodayMinutes: data['readTodayMinutes'] ?? 0,
-      dayStreak: data['dayStreak'] ?? 0,
+      cardsDue: _toInt(data['cardsDue']),
+      readTodayMinutes: _toInt(data['readTodayMinutes']),
+      dayStreak: _toInt(data['dayStreak']),
     );
   }
 
-  // ── Add Book ───────────────────────────────────────────────────────────────
-  // NOTE: The old "search by title and add" flow is replaced by the PDF upload
-  // flow in AddBookController. This method is kept for compatibility but
-  // now simply adds a book by ID directly to the user's library.
   @override
   Future<void> addBook(AddBookParams params) async {
-    // Search for the book first
     final searchResults = await _api.get(
       '/api/v1/books/',
       queryParameters: {'search': params.title},

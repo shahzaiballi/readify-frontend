@@ -9,7 +9,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   // ── Get Full Profile ──────────────────────────────────────────────────
   @override
   Future<UserProfileEntity> getUserProfile() async {
-    final data = await _api.get('/api/v1/api/v1/auth/profile/');
+    final data = await _api.get('/api/v1/auth/profile/');
     return _parseProfile(data);
   }
 
@@ -22,7 +22,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     if (fullName != null) body['full_name'] = fullName;
     if (avatarUrl != null) body['avatar_url'] = avatarUrl;
 
-    final data = await _api.patch('/api/v1/api/v1/auth/profile/', body: body);
+    final data = await _api.patch('/api/v1/auth/profile/', body: body);
     return _parseProfile(data);
   }
 
@@ -32,7 +32,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     required String newPassword,
   }) async {
     await _api.post(
-      '/api/v1/api/v1/auth/change-password/',
+      '/api/v1/auth/change-password/',
       body: {
         'current_password': currentPassword,
         'new_password': newPassword,
