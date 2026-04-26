@@ -141,43 +141,55 @@ class BookRepositoryImpl implements BookRepository {
 
   @override
   Future<List<ChapterEntity>> getChapters(String bookId) async {
-    final data = await _api.get('/api/v1/books/$bookId/chapters/') as List<dynamic>;
+    final data =
+        await _api.get('/api/v1/books/$bookId/chapters/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_chapterFromJson).toList();
   }
 
   @override
   Future<List<ChunkEntity>> getChunks(String bookId, String chapterId) async {
-    final data = await _api.get('/api/v1/books/$bookId/chapters/$chapterId/chunks/') as List<dynamic>;
+    // URL matches the backend route:
+    // GET /api/v1/books/{book_id}/chapters/{chapter_id}/chunks/
+    final data = await _api.get(
+      '/api/v1/books/$bookId/chapters/$chapterId/chunks/',
+    ) as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_chunkFromJson).toList();
   }
 
   @override
   Future<List<SummaryEntity>> getChapterSummaries(String bookId) async {
-    final data = await _api.get('/api/v1/books/$bookId/summaries/') as List<dynamic>;
+    final data =
+        await _api.get('/api/v1/books/$bookId/summaries/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_summaryFromJson).toList();
   }
 
   @override
   Future<List<FlashcardEntity>> getFlashcards(String bookId) async {
-    final data = await _api.get('/api/v1/books/$bookId/flashcards/') as List<dynamic>;
+    final data =
+        await _api.get('/api/v1/books/$bookId/flashcards/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_flashcardFromJson).toList();
   }
 
   @override
   Future<UserProgressEntity> getCurrentProgress() async {
-    final data = await _api.get('/api/v1/reading/progress/') as Map<String, dynamic>;
+    final data =
+        await _api.get('/api/v1/reading/progress/') as Map<String, dynamic>;
     return UserProgressEntity(
       bookId: data['bookId'].toString(),
       title: data['title'] ?? '',
       author: data['author'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       progressPercent: _toInt(data['progressPercent']),
+      // These fields are now returned by the backend
+      currentChapterId: data['currentChapterId']?.toString(),
+      currentChunkIndex: _toInt(data['currentChunkIndex']),
     );
   }
 
   @override
   Future<InsightsEntity> getDailyInsights() async {
-    final data = await _api.get('/api/v1/reading/insights/') as Map<String, dynamic>;
+    final data =
+        await _api.get('/api/v1/reading/insights/') as Map<String, dynamic>;
     return InsightsEntity(
       cardsDue: _toInt(data['cardsDue']),
       readTodayMinutes: _toInt(data['readTodayMinutes']),
@@ -201,5 +213,26 @@ class BookRepositoryImpl implements BookRepository {
 
     final bookId = searchResults.first['id'].toString();
     await _api.post('/api/v1/library/', body: {'book_id': bookId});
+  }
+
+  /// Records a reading session on the backend.
+  /// Called by [ReadingSessionController] every time the user advances a chunk.
+  Future<void> recordReadingSession({
+    required String bookId,
+    required String chapterId,
+    required int chunkIndex,
+    required int durationSeconds,
+    required int chunksCompleted,
+  }) async {
+    await _api.post(
+      '/api/v1/reading/session/',
+      body: {
+        'book_id': bookId,
+        'chapter_id': chapterId,
+        'chunk_index': chunkIndex,
+        'duration_seconds': durationSeconds,
+        'chunks_completed': chunksCompleted,
+      },
+    );
   }
 }

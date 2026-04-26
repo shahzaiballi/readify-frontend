@@ -1,5 +1,3 @@
-// ENHANCED UI: Premium currently reading card with glassmorphism,
-// animated progress ring, and polished press interactions
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/user_stats_entity.dart';
@@ -19,7 +17,6 @@ class CurrentlyReadingCard extends ConsumerStatefulWidget {
 
 class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
     with SingleTickerProviderStateMixin {
-  // ENHANCED UI: Press/hover animation
   late AnimationController _pressController;
   late Animation<double> _scaleAnimation;
 
@@ -41,6 +38,22 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
     super.dispose();
   }
 
+  /// Navigate to the reading screen using the real chapter / chunk from the
+  /// progress entity. Falls back gracefully when they aren't available yet.
+  void _continueReading(BuildContext context) {
+    final chapterId = widget.progress.currentChapterId;
+    if (chapterId == null || chapterId.isEmpty) {
+      // No chapter data yet — go to the chapter list so the user can pick one
+      context.push('/chapters/${widget.progress.bookId}');
+      return;
+    }
+
+    context.push(
+      '/read/${widget.progress.bookId}/$chapterId',
+      extra: {'initialChunkIndex': widget.progress.currentChunkIndex},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final readingPlan = ref.watch(readingPlanProvider);
@@ -56,17 +69,12 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
       onTapCancel: () => _pressController.reverse(),
       child: AnimatedBuilder(
         animation: _scaleAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: _scaleAnimation.value,
-          child: child,
-        ),
+        builder: (context, child) =>
+            Transform.scale(scale: _scaleAnimation.value, child: child),
         child: Container(
-          margin: EdgeInsets.symmetric(
-              horizontal: context.responsive.wp(20)),
+          margin: EdgeInsets.symmetric(horizontal: context.responsive.wp(20)),
           decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(context.responsive.sp(24)),
-            // ENHANCED UI: Rich gradient with depth
+            borderRadius: BorderRadius.circular(context.responsive.sp(24)),
             gradient: const LinearGradient(
               colors: [Color(0xFF2D1B52), Color(0xFF1A2340), Color(0xFF0F1A33)],
               begin: Alignment.topLeft,
@@ -88,7 +96,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
           ),
           child: Stack(
             children: [
-              // ENHANCED UI: Decorative top-right glow orb
+              // Decorative glow orb
               Positioned(
                 top: -20,
                 right: -20,
@@ -112,7 +120,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ENHANCED UI: Label with dot indicator
+                    // Label
                     Row(
                       children: [
                         Container(
@@ -142,7 +150,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ENHANCED UI: Book cover with shadow and rounded corners
+                        // Book cover
                         Hero(
                           tag: 'book-cover-${widget.progress.bookId}',
                           child: Container(
@@ -160,24 +168,16 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(
                                   context.responsive.sp(12)),
-                              child: Image.network(
-                                widget.progress.imageUrl,
-                                height: context.responsive.sp(90),
-                                width: context.responsive.sp(62),
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(
-                                  height: context.responsive.sp(90),
-                                  width: context.responsive.sp(62),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white10,
-                                    borderRadius: BorderRadius.circular(
-                                        context.responsive.sp(12)),
-                                  ),
-                                  child: Icon(Icons.book,
-                                      color: Colors.white30,
-                                      size: context.responsive.sp(24)),
-                                ),
-                              ),
+                              child: widget.progress.imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      widget.progress.imageUrl,
+                                      height: context.responsive.sp(90),
+                                      width: context.responsive.sp(62),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                          _placeholderCover(context),
+                                    )
+                                  : _placeholderCover(context),
                             ),
                           ),
                         ),
@@ -210,7 +210,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                               ),
                               SizedBox(height: context.responsive.sp(16)),
 
-                              // ENHANCED UI: Animated progress bar
+                              // Progress bar
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -239,7 +239,8 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                     height: context.responsive.sp(5),
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius:
+                                          BorderRadius.circular(10),
                                     ),
                                   ),
                                   FractionallySizedBox(
@@ -254,7 +255,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                         gradient: const LinearGradient(
                                           colors: [
                                             Color(0xFFB062FF),
-                                            Color(0xFF7B2FFF)
+                                            Color(0xFF7B2FFF),
                                           ],
                                         ),
                                         boxShadow: [
@@ -274,14 +275,16 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                 children: [
                                   Icon(
                                     Icons.schedule_rounded,
-                                    color: Colors.greenAccent.withOpacity(0.8),
+                                    color:
+                                        Colors.greenAccent.withOpacity(0.8),
                                     size: context.responsive.sp(12),
                                   ),
                                   SizedBox(width: context.responsive.wp(4)),
                                   Text(
                                     '$estimatedDaysLeft days left',
                                     style: TextStyle(
-                                      color: Colors.greenAccent.withOpacity(0.8),
+                                      color: Colors.greenAccent.withOpacity(
+                                          0.8),
                                       fontSize: context.responsive.sp(11),
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -296,19 +299,16 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
 
                     SizedBox(height: context.responsive.sp(20)),
 
-                    // ENHANCED UI: Premium continue reading button
+                    // Continue reading — uses real chapter & chunk
                     _PremiumButton(
                       label: 'Continue Reading',
                       icon: Icons.play_arrow_rounded,
-                      onTap: () => context.push(
-                        '/read/${widget.progress.bookId}/c4',
-                        extra: {'initialChunkIndex': 2},
-                      ),
+                      onTap: () => _continueReading(context),
                     ),
 
                     SizedBox(height: context.responsive.sp(12)),
 
-                    // ENHANCED UI: Secondary action row
+                    // Secondary actions
                     Row(
                       children: [
                         Expanded(
@@ -339,9 +339,23 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
       ),
     );
   }
+
+  Widget _placeholderCover(BuildContext context) {
+    return Container(
+      height: context.responsive.sp(90),
+      width: context.responsive.sp(62),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(context.responsive.sp(12)),
+      ),
+      child: Icon(Icons.book, color: Colors.white30,
+          size: context.responsive.sp(24)),
+    );
+  }
 }
 
-// ENHANCED UI: Gradient primary action button
+// ── Shared button widgets ─────────────────────────────────────────────────────
+
 class _PremiumButton extends StatefulWidget {
   final String label;
   final IconData icon;
@@ -430,7 +444,6 @@ class _PremiumButtonState extends State<_PremiumButton>
   }
 }
 
-// ENHANCED UI: Outlined ghost secondary button
 class _GhostButton extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -453,9 +466,7 @@ class _GhostButton extends StatelessWidget {
           color: Colors.white.withOpacity(0.07),
           borderRadius:
               BorderRadius.circular(context.responsive.sp(12)),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.12),
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.12)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -478,4 +489,3 @@ class _GhostButton extends StatelessWidget {
     );
   }
 }
-
