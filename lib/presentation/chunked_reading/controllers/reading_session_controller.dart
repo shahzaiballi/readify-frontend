@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/repositories/book_repository.dart';
 import '../../../data/repositories/book_repository_impl.dart';
+import '../../../core/providers/progress_refresh_provider.dart';
 import 'reading_session_state.dart';
 
 final bookRepositoryProvider =
@@ -82,7 +83,6 @@ class ReadingSessionController
           current.copyWith(remainingSeconds: current.remainingSeconds - 1),
         );
       }
-      // Timer reaching zero is purely cosmetic — don't auto-advance.
     });
   }
 
@@ -116,9 +116,8 @@ class ReadingSessionController
     // Increment global daily chunk counter
     ref.read(dailyChunkGoalProvider.notifier).state++;
 
-    // ── Record the session on the backend ──────────────────────────────────
-    // Fire-and-forget: don't block the UI on a network call.
-    _recordSession(
+    // ── Record session on backend ────────────────────────────────────────────
+    await _recordSession(
       chunkIndex: previousIndex,
       durationSeconds: _elapsedSeconds,
       chunksCompleted: 1,
@@ -128,8 +127,8 @@ class ReadingSessionController
     if (nextIndex < current.chunks.length) {
       goToChunk(nextIndex);
     } else {
-      // Last chunk — mark the chapter complete on the backend
-      _recordSession(
+      // Last chunk — mark chapter complete on the backend
+      await _recordSession(
         chunkIndex: previousIndex,
         durationSeconds: _elapsedSeconds,
         chunksCompleted: 1,
@@ -138,6 +137,13 @@ class ReadingSessionController
       _timer?.cancel();
       state = AsyncData(current.copyWith(isSessionComplete: true));
     }
+
+    // ── REAL-TIME UI UPDATE ──────────────────────────────────────────────────
+    // Incrementing the shared refresh trigger causes every provider that
+    // watches [pr3t24NpUrJMNunMMASmhAM953bFGeLXzN7] to automatically refetch.
+    // This propagates updated progress to Home, Library, Book Detail, and
+    // Chapter List pages without requiring a manual restart or pull-to-refresh.
+    ref.triggerProgressRefresh();
   }
 
   void backChunk() {
@@ -169,26 +175,24 @@ class ReadingSessionController
 
   // ── Private helpers ───────────────────────────────────────────────────────
 
-  void _recordSession({
+  Future<void> _recordSession({
     required int chunkIndex,
     required int durationSeconds,
     required int chunksCompleted,
     bool isLastChunk = false,
-  }) {
-    // Use the last-chunk index when finishing so the backend marks the chapter
-    // complete (chunk_index >= total_chunks - 1).
+  }) async {
     final repo = ref.read(bookRepositoryProvider) as BookRepositoryImpl;
-    repo
-        .recordReadingSession(
-          bookId: arg.bookId,
-          chapterId: arg.chapterId,
-          chunkIndex: chunkIndex,
-          durationSeconds: durationSeconds,
-          chunksCompleted: chunksCompleted,
-        )
-        .catchError(
-          (e) => null, // Silently ignore — don't crash reading over a network hiccup
-        );
+    try {
+      await repo.recordReadingSession(
+        bookId: arg.bookId,
+        chapterId: arg.chapterId,
+        chunkIndex: chunkIndex,
+        durationSeconds: durationSeconds,
+        chunksCompleted: chunksCompleted,
+      );
+    } catch (_) {
+      // Silently ignore — don't crash reading over a network hiccup
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../auth/widgets/custom_text_field.dart';
 import '../controllers/add_book_controller.dart';
+import '../controllers/library_controller.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -108,6 +109,9 @@ class _AddBookPageState extends ConsumerState<AddBookPage> {
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<void>>(addBookControllerProvider, (previous, next) {
       if (!next.isLoading && next.hasValue && previous is AsyncLoading) {
+        // ✅ Trigger library refresh so the new book appears immediately
+        ref.invalidate(rawLibraryProvider);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(

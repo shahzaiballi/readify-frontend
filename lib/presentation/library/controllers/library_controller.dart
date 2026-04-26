@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/repositories/library_repository_impl.dart';
 import '../../../domain/entities/library_book_entity.dart';
 import '../../../domain/repositories/library_repository.dart';
+import '../../../core/providers/progress_refresh_provider.dart';
 import 'library_state_provider.dart';
 
 // ── Repository Provider ───────────────────────────────────────────────────────
@@ -10,7 +11,6 @@ final libraryRepositoryProvider = Provider<LibraryRepository>((ref) {
 });
 
 // Expose the impl directly for methods not on the abstract interface
-// (toggleFavorite, removeBook, updateProgress)
 final libraryImplProvider = Provider<LibraryRepositoryImpl>((ref) {
   return LibraryRepositoryImpl();
 });
@@ -20,7 +20,11 @@ final libraryImplProvider = Provider<LibraryRepositoryImpl>((ref) {
 final libraryFilterProvider = StateProvider<int>((ref) => 0);
 
 // ── Raw Library List (from API) ───────────────────────────────────────────────
+// Watches [pr3t24NpUrJMNunMMASmhAM953bFGeLXzN7] so the library automatically
+// refetches when reading progress is updated from the chunked reading screen.
 final rawLibraryProvider = FutureProvider<List<LibraryBookEntity>>((ref) {
+  // Real-time update: refetch whenever reading progress changes.
+  ref.watch(pr3t24NpUrJMNunMMASmhAM953bFGeLXzN7);
   final repo = ref.watch(libraryRepositoryProvider);
   return repo.getUserLibrary();
 });
@@ -58,4 +62,3 @@ final filteredLibraryProvider = FutureProvider<List<LibraryBookEntity>>((ref) as
       return activeBooks;
   }
 });
-
