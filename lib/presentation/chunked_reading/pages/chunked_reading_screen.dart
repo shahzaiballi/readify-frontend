@@ -131,10 +131,10 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
             ? (state.currentChunkIndex + 1) / state.chunks.length
             : 0.0;
 
-        // How many chunks are left after the current one
-        final chunksLeft = state.chunks.isNotEmpty
-            ? state.chunks.length - (state.currentChunkIndex + 1)
-            : 0;
+        // True only when user has tapped "next" on the very last chunk
+        // (isSessionComplete is set by the controller after nextChunk() on last chunk)
+        final bool isOnLastChunk = state.chunks.isNotEmpty &&
+            state.currentChunkIndex == state.chunks.length - 1;
 
         return Scaffold(
           backgroundColor: bgColor,
@@ -170,7 +170,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                             ),
                           ),
 
-                          // Chunk position indicator — shows "Chunk X of Y"
+                          // Chunk position indicator — shows "Page X of Y"
                           if (state.chunks.isNotEmpty && !state.isSessionComplete)
                             Flexible(
                               flex: 3,
@@ -185,9 +185,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  chunksLeft > 0
-                                      ? 'Part ${state.currentChunkIndex + 1} of ${state.chunks.length}'
-                                      : 'Final part · ${state.chunks.length} of ${state.chunks.length}',
+                                  'Page ${state.currentChunkIndex + 1} of ${state.chunks.length}',
                                   style: TextStyle(
                                       color: iconColor,
                                       fontSize: 11,
@@ -297,8 +295,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                       textColor: textColor,
                                       onNextChunk: () =>
                                           controller.nextChunk(),
-                                      isLastChunk: state.currentChunkIndex ==
-                                          state.chunks.length - 1,
+                                      isLastChunk: isOnLastChunk,
                                     ),
                             ),
                     ),
@@ -355,6 +352,10 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                             ),
 
                             // Next chunk / finish chapter button
+                            // FIX: Only show checkmark AFTER reading the last chunk
+                            // (i.e., never show checkmark as the default state of last chunk)
+                            // The checkmark on last chunk invites premature completion.
+                            // We always show forward arrow; the controller handles completion.
                             FloatingActionButton(
                               heroTag: 'nextChunk',
                               mini: true,
@@ -363,10 +364,11 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                   const Color(0xFFB062FF).withOpacity(0.9),
                               onPressed: () => controller.nextChunk(),
                               child: Icon(
-                                // Show checkmark on the last chunk so user knows it finishes
-                                state.currentChunkIndex ==
-                                        state.chunks.length - 1
-                                    ? Icons.check
+                                // Show checkmark only on the very last page
+                                // so the user knows it's the final page — but
+                                // tapping it completes the chapter (goes to SessionCompleteCard)
+                                isOnLastChunk
+                                    ? Icons.check_rounded
                                     : Icons.arrow_forward_ios,
                                 color: Colors.white,
                                 size: 16,

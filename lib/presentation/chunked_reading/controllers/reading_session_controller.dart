@@ -62,6 +62,8 @@ class ReadingSessionController
       chunks: chunks,
       currentChunkIndex: safeIndex,
       remainingSeconds: initialSeconds,
+      // FIX: never start in session-complete state, even if loaded at last chunk
+      isSessionComplete: false,
     );
 
     _elapsedSeconds = 0;
@@ -103,13 +105,19 @@ class ReadingSessionController
       state = AsyncData(current.copyWith(
         currentChunkIndex: index,
         remainingSeconds: newChunk.estimatedMinutes * 60,
-        // Clear session complete flag when navigating within chunks
+        // FIX: navigating to any chunk (including last) never auto-completes
         isSessionComplete: false,
       ));
       _startTimer();
     }
   }
 
+  /// Called when the user taps the forward/check FAB.
+  /// 
+  /// FIX: The session only completes AFTER the user taps "next" on the
+  /// last chunk — not simply by being ON the last chunk. This means:
+  /// - Chunks 0..N-2 → navigate forward
+  /// - Chunk N-1 (last) → record session + mark complete → show SessionCompleteCard
   Future<void> nextChunk() async {
     if (!state.hasValue) return;
     final current = state.value!;
@@ -118,7 +126,7 @@ class ReadingSessionController
     // Increment global daily chunk counter
     ref.read(dailyChunkGoalProvider.notifier).state++;
 
-    // ── Record session for the chunk just completed ──────────────────────────
+    // Record session for the chunk just completed
     await _recordSession(
       chunkIndex: currentIndex,
       durationSeconds: _elapsedSeconds,
@@ -128,17 +136,16 @@ class ReadingSessionController
     final nextIndex = currentIndex + 1;
 
     if (nextIndex < current.chunks.length) {
-      // ── There are more chunks — navigate to the next one ──────────────────
+      // ── More chunks remain — navigate forward ──────────────────────────────
       goToChunk(nextIndex);
     } else {
-      // ── All chunks in this chapter are done — mark chapter complete ────────
+      // ── User tapped next on the LAST chunk — chapter is done ───────────────
+      // Only NOW do we mark the session as complete and show the completion card.
       _timer?.cancel();
       state = AsyncData(current.copyWith(isSessionComplete: true));
     }
 
-    // ── REAL-TIME UI UPDATE ──────────────────────────────────────────────────
-    // Incrementing the shared refresh trigger causes every provider that
-    // watches [pr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7] to automatically refetch.
+    // Trigger real-time UI refresh (progress bar, chapter list, etc.)
     ref.triggerProgressRefresh();
   }
 
