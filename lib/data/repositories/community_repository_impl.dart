@@ -165,6 +165,13 @@ class CommunityRepositoryImpl {
     return data.cast<Map<String, dynamic>>().map(_parseMessage).toList();
   }
 
+  Future<List<CommunityMemberEntity>> getMembers(String communityId) async {
+    final data = await _api.get(
+      '/api/v1/community/$communityId/members/',
+    ) as List<dynamic>;
+    return data.cast<Map<String, dynamic>>().map(_parseMember).toList();
+  }
+
   Future<MessageEntity> sendMessage(
     String communityId,
     String content, {
@@ -194,10 +201,5 @@ class CommunityRepositoryImpl {
   Future<List<CommunityEntity>> getBuddySuggestions() async {
     final data = await _api.get('/api/v1/community/suggestions/buddy/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_parseCommunity).toList();
-  }
-
-  Future<List<CommunityMemberEntity>> getMembers(String communityId) async {
-    final data = await _api.get('/api/v1/community/$communityId/members/') as List<dynamic>;
-    return data.cast<Map<String, dynamic>>().map(_parseMember).toList();
   }
 }

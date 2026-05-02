@@ -18,6 +18,7 @@ import '../widgets/custom_bottom_nav_bar.dart';
 import '../../library/pages/library_page.dart';
 import '../../library/pages/add_book_page.dart';
 import '../../discussions/pages/discussions_page.dart';
+import '../../community/pages/community_page.dart';
 import '../../profile/pages/profile_page.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../progress/pages/progress_page.dart';
@@ -96,7 +97,7 @@ class _HomePageState extends ConsumerState<HomePage>
           page = const SizedBox.shrink();
           break;
         case 3:
-          page = const DiscussionsPage();
+          page = const CommunityPage();
           break;
         case 4:
           page = const ProgressPage();

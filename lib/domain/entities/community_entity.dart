@@ -117,6 +117,8 @@ class CommunityEntity {
     required this.createdAt,
   });
 
+  bool get isJoined => isMember;
+
   CommunityEntity copyWith({
     bool? isMember,
     bool? isAdmin,
