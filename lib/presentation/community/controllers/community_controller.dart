@@ -16,10 +16,13 @@ final communityRepositoryProvider = Provider<CommunityRepositoryImpl>((ref) {
 /// 0 = General, 1 = Book Groups
 final communityTabProvider = StateProvider<int>((ref) => 0);
 
+/// Sub-filter: 0 = Public, 1 = My Communities, 2 = Private
+final communitySubFilterProvider = StateProvider<int>((ref) => 0);
+
 /// Search query for community discovery
 final communitySearchProvider = StateProvider<String>((ref) => '');
 
-// ── Public Communities (General + Book tabs) ──────────────────────────────────
+// ── Public Communities ────────────────────────────────────────────────────────
 
 final publicCommunitiesProvider = FutureProvider.autoDispose
     .family<List<CommunityEntity>, String>((ref, type) async {
@@ -28,7 +31,7 @@ final publicCommunitiesProvider = FutureProvider.autoDispose
   return repo.getPublicCommunities(type: type, search: search);
 });
 
-// ── Book-specific communities (for a given bookId) ────────────────────────────
+// ── Book-specific communities ─────────────────────────────────────────────────
 
 final bookCommunitiesProvider = FutureProvider.autoDispose
     .family<List<CommunityEntity>, String>((ref, bookId) async {
@@ -63,7 +66,7 @@ final communityDetailProvider = FutureProvider.autoDispose
   return repo.getCommunityDetail(id);
 });
 
-// ── Community Members Provider ──────────────────────────────────────────────
+// ── Community Members ─────────────────────────────────────────────────────────
 
 final communityMembersProvider = FutureProvider.autoDispose
     .family<List<CommunityMemberEntity>, String>((ref, id) async {
@@ -163,7 +166,6 @@ class MessagesController extends AutoDisposeFamilyNotifier<MessagesState, String
     try {
       final repo = ref.read(communityRepositoryProvider);
       await repo.toggleReaction(messageId, emoji);
-      // Refresh to get updated counts
       await _loadMessages(silent: true);
     } catch (_) {}
   }
@@ -201,84 +203,109 @@ final messagesControllerProvider = NotifierProvider.autoDispose
   MessagesController.new,
 );
 
-// ── Join / Leave Controller ───────────────────────────────────────────────────
+// ── Community Action Controller ───────────────────────────────────────────────
+// NOT autoDispose so state persists across modal open/close
 
-class CommunityActionController extends StateNotifier<AsyncValue<void>> {
-  final CommunityRepositoryImpl _repo;
-  final Ref _ref;
+class CommunityActionState {
+  final bool isLoading;
+  final String? error;
+  final CommunityEntity? createdCommunity;
 
-  CommunityActionController(this._repo, this._ref) : super(const AsyncData(null));
+  const CommunityActionState({
+    this.isLoading = false,
+    this.error,
+    this.createdCommunity,
+  });
 
-  Future<bool> join(String communityId) async {
-    state = const AsyncLoading();
-    try {
-      await _repo.joinCommunity(communityId);
-      _ref.invalidate(myCommunitiesProvider);
-      _ref.invalidate(publicCommunitiesProvider('general'));
-      _ref.invalidate(publicCommunitiesProvider('book'));
-      _ref.invalidate(communityDetailProvider(communityId));
-      state = const AsyncData(null);
-      return true;
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      return false;
-    }
+  CommunityActionState copyWith({
+    bool? isLoading,
+    String? error,
+    CommunityEntity? createdCommunity,
+    bool clearCreated = false,
+  }) {
+    return CommunityActionState(
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+      createdCommunity: clearCreated ? null : (createdCommunity ?? this.createdCommunity),
+    );
+  }
+}
+
+class CommunityActionController extends Notifier<CommunityActionState> {
+  @override
+  CommunityActionState build() => const CommunityActionState();
+
+  void reset() {
+    state = const CommunityActionState();
   }
 
-  Future<bool> leave(String communityId) async {
-    state = const AsyncLoading();
+  Future<CommunityEntity?> createCommunity(CreateCommunityParams params) async {
+    state = state.copyWith(isLoading: true, error: null);
     try {
-      await _repo.leaveCommunity(communityId);
-      _ref.invalidate(myCommunitiesProvider);
-      _ref.invalidate(communityDetailProvider(communityId));
-      state = const AsyncData(null);
-      return true;
-    } catch (e, st) {
-      state = AsyncError(e, st);
-      return false;
-    }
-  }
-
-  // Backwards-compatible wrappers expected by UI
-  Future<bool> joinCommunity(String communityId) => join(communityId);
-  Future<bool> leaveCommunity(String communityId) => leave(communityId);
-
-  Future<CommunityEntity?> joinByInvite(String token) async {
-    state = const AsyncLoading();
-    try {
-      final community = await _repo.joinByInvite(token);
-      _ref.invalidate(myCommunitiesProvider);
-      _ref.invalidate(myPrivateCommunitiesProvider);
-      state = const AsyncData(null);
+      final repo = ref.read(communityRepositoryProvider);
+      final community = await repo.createCommunity(params);
+      state = state.copyWith(isLoading: false, createdCommunity: community);
+      // Invalidate all community lists
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(myPrivateCommunitiesProvider);
+      ref.invalidate(publicCommunitiesProvider('general'));
+      ref.invalidate(publicCommunitiesProvider('book'));
       return community;
-    } catch (e, st) {
-      state = AsyncError(e, st);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
       return null;
     }
   }
 
-  Future<CommunityEntity?> createCommunity(CreateCommunityParams params) async {
-    state = const AsyncLoading();
+  Future<bool> joinCommunity(String communityId) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final repo = _repo;
-      final community = await repo.createCommunity(params);
-      _ref.invalidate(myCommunitiesProvider);
-      _ref.invalidate(myPrivateCommunitiesProvider);
-      _ref.invalidate(publicCommunitiesProvider('general'));
-      _ref.invalidate(publicCommunitiesProvider('book'));
-      state = const AsyncData(null);
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.joinCommunity(communityId);
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(publicCommunitiesProvider('general'));
+      ref.invalidate(publicCommunitiesProvider('book'));
+      ref.invalidate(communityDetailProvider(communityId));
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> leaveCommunity(String communityId) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.leaveCommunity(communityId);
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(communityDetailProvider(communityId));
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<CommunityEntity?> joinByInvite(String token) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final community = await repo.joinByInvite(token);
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(myPrivateCommunitiesProvider);
+      state = state.copyWith(isLoading: false);
       return community;
-    } catch (e, st) {
-      state = AsyncError(e, st);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
       return null;
     }
   }
 }
 
 final communityActionProvider =
-    StateNotifierProvider.autoDispose<CommunityActionController, AsyncValue<void>>(
-  (ref) => CommunityActionController(
-    ref.watch(communityRepositoryProvider),
-    ref,
-  ),
+    NotifierProvider<CommunityActionController, CommunityActionState>(
+  CommunityActionController.new,
 );
