@@ -1,5 +1,7 @@
 // lib/data/repositories/community_repository_impl.dart
 
+import 'dart:convert';
+import 'dart:typed_data';
 import '../../domain/entities/community_entity.dart';
 import '../network/api_client.dart';
 
@@ -136,9 +138,53 @@ class CommunityRepositoryImpl {
       'cover_emoji': params.coverEmoji,
     };
     if (params.bookId != null) body['book_id'] = params.bookId;
+    if ((params as dynamic).bookName != null) body['book_name'] = (params as dynamic).bookName;
+    if ((params as dynamic).bookAuthor != null) body['book_author'] = (params as dynamic).bookAuthor;
 
     final data = await _api.post('/api/v1/community/', body: body) as Map<String, dynamic>;
     return _parseCommunity(data);
+  }
+
+  /// Create community with optional image upload (works on web + mobile).
+  /// The backend should accept a multipart POST to `/api/v1/community/`.
+  Future<CommunityEntity> createCommunityWithImage(
+    CreateCommunityParams params, {
+    String? filePath,
+    Uint8List? fileBytes,
+    String? fileName,
+    String fileFieldName = 'cover',
+  }) async {
+    // If no file provided, fall back to JSON create
+    if ((filePath == null && fileBytes == null) || (fileName == null && filePath == null)) {
+      return createCommunity(params);
+    }
+
+    final fields = <String, String>{
+      'name': params.name,
+      'description': params.description,
+      'community_type': params.communityType,
+      'privacy': params.privacy,
+      'cover_emoji': params.coverEmoji,
+    };
+    if (params.bookId != null) fields['book_id'] = params.bookId!;
+    if ((params as dynamic).bookName != null) fields['book_name'] = (params as dynamic).bookName!;
+    if ((params as dynamic).bookAuthor != null) fields['book_author'] = (params as dynamic).bookAuthor!;
+
+    final response = await _api.uploadFile(
+      endpoint: '/api/v1/community/',
+      fieldName: fileFieldName,
+      filePath: filePath,
+      fileBytes: fileBytes,
+      fileName: fileName,
+      fields: fields,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return _parseCommunity(data);
+    }
+
+    throw Exception('Upload failed: ${response.statusCode}');
   }
 
   Future<Map<String, dynamic>> joinCommunity(String id) async {

@@ -153,6 +153,8 @@ class CreateCommunityParams {
   final String communityType;
   final String privacy;
   final String? bookId;
+  final String? bookName;
+  final String? bookAuthor;
   final String coverEmoji;
 
   const CreateCommunityParams({
@@ -161,6 +163,8 @@ class CreateCommunityParams {
     required this.communityType,
     required this.privacy,
     this.bookId,
+    this.bookName,
+    this.bookAuthor,
     this.coverEmoji = '📚',
   });
 }

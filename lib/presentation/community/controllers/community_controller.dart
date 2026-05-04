@@ -1,6 +1,7 @@
 // lib/presentation/community/controllers/community_controller.dart
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/community_entity.dart';
 import '../../../data/repositories/community_repository_impl.dart';
@@ -257,6 +258,36 @@ class CommunityActionController extends Notifier<CommunityActionState> {
     }
   }
 
+  /// Creates a community and uploads an optional image (web + mobile).
+  Future<CommunityEntity?> createCommunityWithImage({
+    required CreateCommunityParams params,
+    String? imagePath,
+    Uint8List? imageBytes,
+    String? imageName,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final community = await repo.createCommunityWithImage(
+        params,
+        filePath: imagePath,
+        fileBytes: imageBytes,
+        fileName: imageName,
+        fileFieldName: 'cover_image',
+      );
+      state = state.copyWith(isLoading: false, createdCommunity: community);
+      // Invalidate lists
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(myPrivateCommunitiesProvider);
+      ref.invalidate(publicCommunitiesProvider('general'));
+      ref.invalidate(publicCommunitiesProvider('book'));
+      return community;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
+
   Future<bool> joinCommunity(String communityId) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -288,6 +319,7 @@ class CommunityActionController extends Notifier<CommunityActionState> {
       return false;
     }
   }
+  
 
   Future<CommunityEntity?> joinByInvite(String token) async {
     state = state.copyWith(isLoading: true);
