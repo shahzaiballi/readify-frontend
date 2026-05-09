@@ -40,6 +40,13 @@ import '../../presentation/community/pages/community_page.dart';
 import '../../presentation/community/pages/community_detail_page.dart';
 import '../../presentation/community/pages/community_chat_page.dart';
 
+// Book Intelligence
+import '../../presentation/book_intelligence/pages/book_intelligence_hub_page.dart';
+import '../../presentation/book_intelligence/pages/book_brief_page.dart';
+import '../../presentation/book_intelligence/pages/reading_modes_page.dart';
+import '../../presentation/book_intelligence/pages/ask_your_book_page.dart';
+import '../../presentation/book_intelligence/pages/daily_insights_page.dart';
+
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
@@ -207,6 +214,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final id = state.pathParameters['id']!;
           return CommunityChatPage(communityId: id);
+        },
+      ),
+
+      // ✅ BOOK INTELLIGENCE (NEW)
+      GoRoute(
+        path: '/book_intelligence/:id',
+        name: 'book_intelligence_hub',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          return BookIntelligenceHubPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/book_intelligence/:id/brief',
+        name: 'book_brief',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          return BookBriefPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/book_intelligence/:id/modes',
+        name: 'reading_modes',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          return ReadingModesPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/book_intelligence/:id/qa',
+        name: 'ask_your_book',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          return AskYourBookPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/book_intelligence/:id/notifications',
+        name: 'daily_insights',
+        builder: (_, state) {
+          final id = state.pathParameters['id']!;
+          return DailyInsightsPage(bookId: id);
         },
       ),
 

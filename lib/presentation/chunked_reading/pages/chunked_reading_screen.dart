@@ -6,6 +6,7 @@ import '../widgets/chunk_timer_overlay.dart';
 import '../widgets/chunk_settings_overlay.dart';
 import '../widgets/session_complete_card.dart';
 import '../widgets/chunk_content_page.dart';
+import '../widgets/page_summary_sheet.dart';
 import '../../../core/services/notification_service.dart';
 
 class ChunkedReadingScreen extends ConsumerStatefulWidget {
@@ -211,6 +212,12 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                 ),
                                 Flexible(
                                   child: IconButton(
+                                    icon: Icon(Icons.auto_awesome, color: const Color(0xFFB062FF), size: 20),
+                                    onPressed: () => _showPageSummary(context, state),
+                                  ),
+                                ),
+                                Flexible(
+                                  child: IconButton(
                                     icon: Text(
                                       'AA',
                                       style: TextStyle(
@@ -410,6 +417,23 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
               onThemeModeChanged: controller.updateThemeMode,
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showPageSummary(BuildContext context, ReadingSessionState state) {
+    if (state.chunks.isEmpty) return;
+    final currentChunk = state.chunks[state.currentChunkIndex];
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return PageSummarySheet(
+          bookId: widget.bookId,
+          chapterId: widget.chapterId,
+          chunkId: currentChunk.id,
         );
       },
     );

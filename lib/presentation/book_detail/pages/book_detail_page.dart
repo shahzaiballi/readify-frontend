@@ -162,13 +162,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
   List<Widget> _buildStaggeredActions(BuildContext context, dynamic book) {
     final actions = [
       (
-        'Reading Plan',
-        'Track your daily progress',
-        Icons.track_changes_rounded,
-        const Color(0xFFB062FF),
-        () => context.push('/reading_plan'),
-      ),
-      (
         'Flashcards',
         'Review key concepts',
         Icons.style_rounded,
