@@ -1,66 +1,17 @@
-import 'dart:io';
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../auth/widgets/custom_text_field.dart';
 import '../controllers/add_book_controller.dart';
 import '../controllers/library_controller.dart';
+import '../../profile/controllers/reading_plan_controller.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 
-// ── Processing stage model ────────────────────────────────────────────────────
-
-class _ProcessingStage {
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-
-  const _ProcessingStage({
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.color,
-  });
-}
-
-const _processingStages = [
-  _ProcessingStage(
-    title: 'Uploading PDF',
-    description: 'Securely uploading your book to the server...',
-    icon: Icons.cloud_upload_outlined,
-    color: Color(0xFFB062FF),
-  ),
-  _ProcessingStage(
-    title: 'AI Chapter Detection',
-    description: 'Claude reads your PDF and identifies chapters...',
-    icon: Icons.auto_awesome_outlined,
-    color: Color(0xFF3861FB),
-  ),
-  _ProcessingStage(
-    title: 'Building Reading Chunks',
-    description: 'Splitting content into bite-sized reading sessions...',
-    icon: Icons.layers_outlined,
-    color: Color(0xFF00B4D8),
-  ),
-  _ProcessingStage(
-    title: 'Generating Summaries',
-    description: 'Creating chapter summaries and key takeaways...',
-    icon: Icons.description_outlined,
-    color: Color(0xFF10B981),
-  ),
-  _ProcessingStage(
-    title: 'Creating Flashcards',
-    description: 'Building personalised flashcards for retention...',
-    icon: Icons.style_outlined,
-    color: Color(0xFFE83E8C),
-  ),
-];
-
-// ── What happens next features ────────────────────────────────────────────────
+// â”€â”€ What happens next features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _FeatureItem {
   final String emoji;
@@ -76,28 +27,28 @@ class _FeatureItem {
 
 const _featureItems = [
   _FeatureItem(
-    emoji: '🤖',
+    emoji: 'ðŸ¤–',
     title: 'AI Chapters',
     description: 'Auto-detected from your PDF',
   ),
   _FeatureItem(
-    emoji: '⏱️',
+    emoji: 'â±ï¸',
     title: '5-min Chunks',
     description: 'Bite-sized, never overwhelming',
   ),
   _FeatureItem(
-    emoji: '🧠',
+    emoji: 'ðŸ§ ',
     title: 'Flashcards',
     description: 'Key concepts, auto-generated',
   ),
   _FeatureItem(
-    emoji: '📝',
+    emoji: 'ðŸ“',
     title: 'Summaries',
     description: 'Chapter insights at a glance',
   ),
 ];
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
+// â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class AddBookPage extends ConsumerStatefulWidget {
   const AddBookPage({super.key});
@@ -106,8 +57,7 @@ class AddBookPage extends ConsumerStatefulWidget {
   ConsumerState<AddBookPage> createState() => _AddBookPageState();
 }
 
-class _AddBookPageState extends ConsumerState<AddBookPage>
-    with TickerProviderStateMixin {
+class _AddBookPageState extends ConsumerState<AddBookPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _authorController = TextEditingController();
@@ -116,110 +66,14 @@ class _AddBookPageState extends ConsumerState<AddBookPage>
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
 
-  // Processing animation state
-  bool _isProcessing = false;
-  int _currentStageIndex = 0;
-  double _overallProgress = 0.0;
-
-  // Animation controllers
-  late AnimationController _progressAnimController;
-  late AnimationController _stageAnimController;
-  late AnimationController _pulseController;
-  late AnimationController _shimmerController;
-
-  late Animation<double> _progressAnim;
-  late Animation<double> _stageAnim;
-  late Animation<double> _pulseAnim;
-  late Animation<double> _shimmerAnim;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _progressAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2800),
-    );
-    _progressAnim = CurvedAnimation(
-      parent: _progressAnimController,
-      curve: Curves.easeOutCubic,
-    );
-
-    _stageAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _stageAnim = CurvedAnimation(
-      parent: _stageAnimController,
-      curve: Curves.easeOut,
-    );
-
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    )..repeat();
-    _shimmerAnim = Tween<double>(begin: -1.5, end: 1.5).animate(
-      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut),
-    );
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
     _authorController.dispose();
-    _progressAnimController.dispose();
-    _stageAnimController.dispose();
-    _pulseController.dispose();
-    _shimmerController.dispose();
     super.dispose();
   }
 
-  // ── Simulated processing stages ─────────────────────────────────────────────
-
-  Future<void> _simulateProcessing() async {
-    setState(() => _isProcessing = true);
-
-    final stagesCount = _processingStages.length;
-
-    for (int i = 0; i < stagesCount; i++) {
-      if (!mounted) return;
-
-      setState(() => _currentStageIndex = i);
-      _stageAnimController.forward(from: 0);
-
-      // Animate progress bar to this stage
-      final targetProgress = (i + 1) / stagesCount;
-      _progressAnim = Tween<double>(
-        begin: _overallProgress,
-        end: targetProgress,
-      ).animate(CurvedAnimation(
-        parent: _progressAnimController,
-        curve: Curves.easeOutCubic,
-      ));
-      _progressAnimController.forward(from: 0);
-      setState(() => _overallProgress = targetProgress);
-
-      // Wait for each stage — long enough for the user to read and feel the progress
-      final stageDurations = [
-        const Duration(milliseconds: 4500), // Uploading
-        const Duration(milliseconds: 5500), // AI Chapter Detection
-        const Duration(milliseconds: 4000), // Building Chunks
-        const Duration(milliseconds: 5000), // Summaries
-        const Duration(milliseconds: 4000), // Flashcards
-      ];
-      await Future.delayed(stageDurations[i]);
-    }
-  }
-
-  // ── File picker ──────────────────────────────────────────────────────────────
+  // â”€â”€ File picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _handleFileUpload() async {
     if (!kIsWeb) {
@@ -265,7 +119,7 @@ class _AddBookPageState extends ConsumerState<AddBookPage>
     }
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────────────
+  // â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _submitForm() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
@@ -280,63 +134,28 @@ class _AddBookPageState extends ConsumerState<AddBookPage>
       return;
     }
 
-    // Start the simulated processing animation in parallel with the real upload
-    _simulateProcessing();
-
+    final plan = ref.read(readingPlanProvider);
     await ref.read(addBookControllerProvider.notifier).uploadBook(
-          title: _titleController.text.trim(),
-          author: _authorController.text.trim(),
-          filePath: _selectedFilePath,
-          fileBytes: _selectedFileBytes,
-          fileName: _selectedFileName,
-        );
+      title: _titleController.text.trim(),
+      author: _authorController.text.trim(),
+      filePath: _selectedFilePath,
+      fileBytes: _selectedFileBytes,
+      fileName: _selectedFileName,
+      readingMode: plan.readingMode,
+      dailyMinutes: plan.dailyMinutes,
+    );
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
-
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-  }
+  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   bool get _hasFile =>
       _selectedFilePath != null || _selectedFileBytes != null;
 
-  // ── Build ────────────────────────────────────────────────────────────────────
+  // â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<void>>(addBookControllerProvider, (previous, next) {
-      if (!next.isLoading && next.hasValue && previous is AsyncLoading) {
-        ref.invalidate(rawLibraryProvider);
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                '📚 Book uploaded! It will appear in your library once AI processing completes.',
-              ),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 4),
-            ),
-          );
-          Navigator.of(context).pop();
-        }
-      } else if (next.hasError && !next.isLoading) {
-        if (mounted) {
-          setState(() => _isProcessing = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Upload failed: ${next.error}'),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
-        }
-      }
-    });
-
-    final isLoading = ref.watch(addBookControllerProvider).isLoading;
-    final showProcessing = _isProcessing || isLoading;
+    final flowState = ref.watch(addBookControllerProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -352,72 +171,142 @@ class _AddBookPageState extends ConsumerState<AddBookPage>
         top: context.responsive.sp(12),
       ),
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 450),
+        duration: const Duration(milliseconds: 400),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
         transitionBuilder: (child, animation) => FadeTransition(
           opacity: animation,
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(0, 0.08),
+              begin: const Offset(0, 0.06),
               end: Offset.zero,
             ).animate(animation),
             child: child,
           ),
         ),
-        child: showProcessing
-            ? _ProcessingView(
-                key: const ValueKey('processing'),
-                currentStageIndex: _currentStageIndex,
-                overallProgress: _overallProgress,
-                progressAnim: _progressAnim,
-                stageAnim: _stageAnim,
-                pulseAnim: _pulseAnim,
-                shimmerAnim: _shimmerAnim,
-              )
-            : _UploadFormView(
-                key: const ValueKey('form'),
-                formKey: _formKey,
-                titleController: _titleController,
-                authorController: _authorController,
-                hasFile: _hasFile,
-                selectedFileName: _selectedFileName,
-                onPickFile: _handleFileUpload,
-                onSubmit: _submitForm,
-              ),
+        child: switch (flowState) {
+          UploadIdle() => _UploadFormView(
+              key: const ValueKey('form'),
+              formKey: _formKey,
+              titleController: _titleController,
+              authorController: _authorController,
+              hasFile: _hasFile,
+              selectedFileName: _selectedFileName,
+              onPickFile: _handleFileUpload,
+              onSubmit: _submitForm,
+            ),
+          UploadInProgress(stage: final stage, progress: final progress) =>
+            _ProcessingStateView(
+              key: const ValueKey('processing'),
+              stageText: stage,
+              progress: progress,
+            ),
+          UploadAwaitingConfirm(
+            bookId: final bookId,
+            uploadId: final uploadId,
+            chapters: final chapters,
+          ) =>
+            _ConfirmChaptersView(
+              key: const ValueKey('confirm'),
+              bookId: bookId,
+              uploadId: uploadId,
+              chapters: chapters,
+              onConfirm: (edited, mode, minutes) => ref
+                  .read(addBookControllerProvider.notifier)
+                  .confirmChapters(
+                    bookId: bookId,
+                    editedChapters: edited,
+                    readingMode: mode,
+                    dailyMinutes: minutes,
+                  ),
+            ),
+          UploadBuildingSchedule() => _ProcessingStateView(
+              key: const ValueKey('scheduling'),
+              stageText: 'Building your reading schedule...',
+              progress: 0.85,
+            ),
+          UploadComplete(bookId: final bookId, bookTitle: final title) =>
+            _SuccessView(
+              key: const ValueKey('success'),
+              bookId: bookId,
+              bookTitle: title,
+              onOpen: () {
+                ref.invalidate(rawLibraryProvider);
+                Navigator.of(context).pop();
+                context.push('/book_detail/$bookId');
+              },
+              onClose: () {
+                ref.invalidate(rawLibraryProvider);
+                ref
+                    .read(addBookControllerProvider.notifier)
+                    .reset();
+                Navigator.of(context).pop();
+              },
+            ),
+          UploadFailed(message: final msg) => _ErrorView(
+              key: const ValueKey('error'),
+              message: msg,
+              onRetry: () =>
+                  ref.read(addBookControllerProvider.notifier).reset(),
+            ),
+        },
       ),
     );
   }
 }
 
-// ── Processing View ────────────────────────────────────────────────────────────
+// â”€â”€ Processing State View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-class _ProcessingView extends StatelessWidget {
-  final int currentStageIndex;
-  final double overallProgress;
-  final Animation<double> progressAnim;
-  final Animation<double> stageAnim;
-  final Animation<double> pulseAnim;
-  final Animation<double> shimmerAnim;
+class _ProcessingStateView extends StatefulWidget {
+  final String stageText;
+  final double progress;
 
-  const _ProcessingView({
+  const _ProcessingStateView({
     super.key,
-    required this.currentStageIndex,
-    required this.overallProgress,
-    required this.progressAnim,
-    required this.stageAnim,
-    required this.pulseAnim,
-    required this.shimmerAnim,
+    required this.stageText,
+    required this.progress,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final stage = _processingStages[currentStageIndex.clamp(
-      0,
-      _processingStages.length - 1,
-    )];
-    final progressPercent = (overallProgress * 100).toInt();
+  State<_ProcessingStateView> createState() => _ProcessingStateViewState();
+}
 
+class _ProcessingStateViewState extends State<_ProcessingStateView>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late AnimationController _shimmerController;
+  late Animation<double> _pulseAnim;
+  late Animation<double> _shimmerAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
+    _shimmerAnim = Tween<double>(begin: -1.5, end: 1.5).animate(
+      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = (widget.progress * 100).toInt();
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: context.responsive.wp(24),
@@ -425,207 +314,126 @@ class _ProcessingView extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Drag handle
           _DragHandle(),
-          SizedBox(height: context.responsive.sp(24)),
-
-          // Animated icon
+          SizedBox(height: context.responsive.sp(32)),
           AnimatedBuilder(
-            animation: pulseAnim,
-            builder: (_, child) => Transform.scale(
-              scale: pulseAnim.value,
-              child: child,
-            ),
+            animation: _pulseAnim,
+            builder: (_, child) =>
+                Transform.scale(scale: _pulseAnim.value, child: child),
             child: Container(
               width: context.responsive.sp(80),
               height: context.responsive.sp(80),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    stage.color.withValues(alpha: 0.3),
-                    stage.color.withValues(alpha: 0.08),
-                  ],
-                ),
+                gradient: RadialGradient(colors: [
+                  const Color(0xFFB062FF).withValues(alpha: 0.3),
+                  const Color(0xFFB062FF).withValues(alpha: 0.07),
+                ]),
                 boxShadow: [
                   BoxShadow(
-                    color: stage.color.withValues(alpha: 0.35),
+                    color: const Color(0xFFB062FF).withValues(alpha: 0.35),
                     blurRadius: 24,
                     spreadRadius: 4,
                   ),
                 ],
               ),
-              child: Icon(
-                stage.icon,
-                color: stage.color,
-                size: context.responsive.sp(36),
-              ),
+              child: Icon(Icons.auto_awesome_rounded,
+                  color: const Color(0xFFB062FF),
+                  size: context.responsive.sp(36)),
             ),
           ),
-
           SizedBox(height: context.responsive.sp(20)),
-
-          // Stage title
-          AnimatedBuilder(
-            animation: stageAnim,
-            builder: (_, child) => Opacity(
-              opacity: stageAnim.value.clamp(0.0, 1.0),
-              child: Transform.translate(
-                offset: Offset(0, 12 * (1 - stageAnim.value.clamp(0.0, 1.0))),
-                child: child,
-              ),
+          Text(
+            'Processing your book',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: context.responsive.sp(20),
+              fontWeight: FontWeight.bold,
             ),
-            child: Text(
-              stage.title,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: context.responsive.sp(20),
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.3,
-              ),
-              textAlign: TextAlign.center,
-            ),
+            textAlign: TextAlign.center,
           ),
-
-          SizedBox(height: context.responsive.sp(8)),
-
-          AnimatedBuilder(
-            animation: stageAnim,
-            builder: (_, child) => Opacity(
-              opacity: stageAnim.value.clamp(0.0, 1.0),
-              child: child,
-            ),
-            child: Text(
-              stage.description,
-              style: TextStyle(
-                color: Colors.white54,
-                fontSize: context.responsive.sp(13),
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
+          SizedBox(height: context.responsive.sp(6)),
+          Text(
+            widget.stageText,
+            style: TextStyle(
+                color: Colors.white60, fontSize: context.responsive.sp(13)),
+            textAlign: TextAlign.center,
           ),
-
           SizedBox(height: context.responsive.sp(32)),
-
-          // Progress bar with shimmer
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Processing your book...',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: context.responsive.sp(12),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  AnimatedBuilder(
-                    animation: progressAnim,
-                    builder: (_, _) => Text(
-                      '${(progressAnim.value.clamp(0.0, 1.0) * 100).toInt()}%',
-                      style: TextStyle(
-                        color: stage.color,
-                        fontSize: context.responsive.sp(13),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: context.responsive.sp(10)),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(99),
-                child: Container(
-                  height: context.responsive.sp(8),
-                  color: Colors.white.withValues(alpha: 0.08),
-                  child: AnimatedBuilder(
-                    animation: progressAnim,
-                    builder: (_, _) => FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: progressAnim.value.clamp(0.0, 1.0),
-                      child: AnimatedBuilder(
-                        animation: shimmerAnim,
-                        builder: (_, child) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                stage.color,
-                                stage.color.withValues(alpha: 0.7),
-                                Colors.white.withValues(alpha: 0.9),
-                                stage.color.withValues(alpha: 0.7),
-                                stage.color,
-                              ],
-                              stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
-                              begin: Alignment(shimmerAnim.value - 1, 0),
-                              end: Alignment(shimmerAnim.value, 0),
-                            ),
-                          ),
-                        ),
+              Text('Progress',
+                  style: TextStyle(
+                      color: Colors.white60,
+                      fontSize: context.responsive.sp(12))),
+              Text('$percent%',
+                  style: TextStyle(
+                      color: const Color(0xFFB062FF),
+                      fontSize: context.responsive.sp(13),
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
+          SizedBox(height: context.responsive.sp(10)),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: Container(
+              height: context.responsive.sp(8),
+              color: Colors.white.withValues(alpha: 0.08),
+              child: AnimatedFractionallySizedBox(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOutCubic,
+                widthFactor: widget.progress.clamp(0.0, 1.0),
+                alignment: Alignment.centerLeft,
+                child: AnimatedBuilder(
+                  animation: _shimmerAnim,
+                  builder: (_, _) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFFB062FF),
+                          const Color(0xFFB062FF).withValues(alpha: 0.7),
+                          Colors.white.withValues(alpha: 0.9),
+                          const Color(0xFFB062FF).withValues(alpha: 0.7),
+                          const Color(0xFFB062FF),
+                        ],
+                        stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
+                        begin: Alignment(_shimmerAnim.value - 1, 0),
+                        end: Alignment(_shimmerAnim.value, 0),
                       ),
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-
-          SizedBox(height: context.responsive.sp(28)),
-
-          // Stage steps
-          ..._processingStages.asMap().entries.map((entry) {
-            final i = entry.key;
-            final s = entry.value;
-            final isCompleted = i < currentStageIndex;
-            final isCurrent = i == currentStageIndex;
-            final isPending = i > currentStageIndex;
-
-            return _StageStepRow(
-              stage: s,
-              isCompleted: isCompleted,
-              isCurrent: isCurrent,
-              isPending: isPending,
-              pulseAnim: pulseAnim,
-            );
-          }),
-
-          SizedBox(height: context.responsive.sp(20)),
-
-          // Disclaimer
+          SizedBox(height: context.responsive.sp(24)),
           Container(
             padding: EdgeInsets.all(context.responsive.sp(14)),
             decoration: BoxDecoration(
-              color: const Color(0xFFB062FF).withValues(alpha: 0.08),
+              color: const Color(0xFFB062FF).withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(context.responsive.sp(12)),
               border: Border.all(
-                color: const Color(0xFFB062FF).withValues(alpha: 0.2),
-              ),
+                  color: const Color(0xFFB062FF).withValues(alpha: 0.2)),
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.info_outline,
-                  color: const Color(0xFFB062FF),
-                  size: context.responsive.sp(16),
-                ),
+                Icon(Icons.info_outline,
+                    color: const Color(0xFFB062FF),
+                    size: context.responsive.sp(16)),
                 SizedBox(width: context.responsive.wp(10)),
                 Expanded(
                   child: Text(
-                    'Your book will appear in your library once AI processing is complete. You can close this and it will continue in the background.',
+                    'You can close this and the processing will continue in the background.',
                     style: TextStyle(
-                      color: Colors.white60,
-                      fontSize: context.responsive.sp(11.5),
-                      height: 1.5,
-                    ),
+                        color: Colors.white60,
+                        fontSize: context.responsive.sp(11.5),
+                        height: 1.5),
                   ),
                 ),
               ],
             ),
           ),
-
           SizedBox(height: context.responsive.sp(8)),
         ],
       ),
@@ -633,120 +441,396 @@ class _ProcessingView extends StatelessWidget {
   }
 }
 
-// ── Stage Step Row ─────────────────────────────────────────────────────────────
+// â”€â”€ Confirm Chapters View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-class _StageStepRow extends StatelessWidget {
-  final _ProcessingStage stage;
-  final bool isCompleted;
-  final bool isCurrent;
-  final bool isPending;
-  final Animation<double> pulseAnim;
+class _ConfirmChaptersView extends ConsumerStatefulWidget {
+  final String bookId;
+  final String uploadId;
+  final List<Map<String, dynamic>> chapters;
+  final Future<void> Function(
+    List<Map<String, dynamic>> edited,
+    String readingMode,
+    int dailyMinutes,
+  ) onConfirm;
 
-  const _StageStepRow({
-    required this.stage,
-    required this.isCompleted,
-    required this.isCurrent,
-    required this.isPending,
-    required this.pulseAnim,
+  const _ConfirmChaptersView({
+    super.key,
+    required this.bookId,
+    required this.uploadId,
+    required this.chapters,
+    required this.onConfirm,
   });
+
+  @override
+  ConsumerState<_ConfirmChaptersView> createState() =>
+      _ConfirmChaptersViewState();
+}
+
+class _ConfirmChaptersViewState
+    extends ConsumerState<_ConfirmChaptersView> {
+  late List<TextEditingController> _titleControllers;
+  bool _confirming = false;
+  String _readingMode = 'deep';
+  int _dailyMinutes = 30;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleControllers = widget.chapters.map((ch) {
+      return TextEditingController(text: ch['title']?.toString() ?? '');
+    }).toList();
+    final plan = ref.read(readingPlanProvider);
+    _readingMode = plan.readingMode;
+    _dailyMinutes = plan.dailyMinutes;
+  }
+
+  @override
+  void dispose() {
+    for (final c in _titleControllers) c.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onConfirm() async {
+    setState(() => _confirming = true);
+    final edited = widget.chapters.asMap().entries.map((e) {
+      return {
+        'chapter_number': e.value['chapterNumber'] ?? e.value['chapter_number'] ?? (e.key + 1),
+        'title': _titleControllers[e.key].text.trim(),
+      };
+    }).toList();
+    await widget.onConfirm(edited, _readingMode, _dailyMinutes);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final source = widget.chapters.isNotEmpty
+        ? (widget.chapters.first['chapterSource'] ?? widget.chapters.first['chapter_source'] ?? 'ai')
+        : 'ai';
+
+    final sourceLabel = switch (source) {
+      'bookmarks' => 'detected from PDF bookmarks',
+      'text_toc' => 'detected from Table of Contents',
+      'ai_generated' => 'detected by AI analysis',
+      _ => 'auto-detected',
+    };
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _DragHandle(),
+        SizedBox(height: context.responsive.sp(16)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(24)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(context.responsive.sp(8)),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.check_circle_outline,
+                        color: const Color(0xFF10B981),
+                        size: context.responsive.sp(20)),
+                  ),
+                  SizedBox(width: context.responsive.wp(12)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Review Your Chapters',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: context.responsive.sp(17),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${widget.chapters.length} chapters $sourceLabel',
+                          style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: context.responsive.sp(12)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: context.responsive.sp(6)),
+              Text(
+                'Rename any chapter if needed, then confirm to build your reading schedule.',
+                style: TextStyle(
+                    color: Colors.white38, fontSize: context.responsive.sp(12)),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.responsive.sp(12)),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.38,
+          ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(
+                horizontal: context.responsive.wp(24)),
+            itemCount: widget.chapters.length,
+            itemBuilder: (context, i) {
+              final ch = widget.chapters[i];
+              final num = ch['chapterNumber'] ?? ch['chapter_number'] ?? (i + 1);
+              return Padding(
+                padding: EdgeInsets.only(bottom: context.responsive.sp(8)),
+                child: Row(
+                  children: [
+                    Container(
+                      width: context.responsive.sp(28),
+                      height: context.responsive.sp(28),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFB062FF).withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$num',
+                          style: TextStyle(
+                            color: const Color(0xFFB062FF),
+                            fontSize: context.responsive.sp(11),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: context.responsive.wp(10)),
+                    Expanded(
+                      child: TextField(
+                        controller: _titleControllers[i],
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: context.responsive.sp(13)),
+                        decoration: InputDecoration(
+                          hintText: 'Chapter $num',
+                          hintStyle: const TextStyle(color: Colors.white30),
+                          filled: true,
+                          fillColor: const Color(0xFF1E233D),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: context.responsive.wp(12),
+                            vertical: context.responsive.sp(10),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                                context.responsive.sp(8)),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        SizedBox(height: context.responsive.sp(12)),
+        _ReadingPrefsSelector(
+          selectedMode: _readingMode,
+          dailyMinutes: _dailyMinutes,
+          onModeChanged: (m) => setState(() => _readingMode = m),
+          onMinutesChanged: (v) => setState(() => _dailyMinutes = v),
+        ),
+        SizedBox(height: context.responsive.sp(12)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(24)),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _confirming ? null : _onConfirm,
+              icon: _confirming
+                  ? SizedBox(
+                      width: context.responsive.sp(16),
+                      height: context.responsive.sp(16),
+                      child: const CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : const Icon(Icons.check_rounded, color: Colors.white),
+              label: Text(
+                _confirming
+                    ? 'Confirming...'
+                    : 'Confirm & Build Reading Schedule',
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                padding:
+                    EdgeInsets.symmetric(vertical: context.responsive.sp(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(context.responsive.sp(12))),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: context.responsive.sp(8)),
+      ],
+    );
+  }
+}
+
+// â”€â”€ Success View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+// ── Reading Preferences Selector ──────────────────────────────────────────────
+
+class _ReadingPrefsSelector extends StatelessWidget {
+  final String selectedMode;
+  final int dailyMinutes;
+  final ValueChanged<String> onModeChanged;
+  final ValueChanged<int> onMinutesChanged;
+
+  const _ReadingPrefsSelector({
+    required this.selectedMode,
+    required this.dailyMinutes,
+    required this.onModeChanged,
+    required this.onMinutesChanged,
+  });
+
+  static const _modes = ['skim', 'concept', 'deep', 'exam'];
+  static const _modeLabels = {
+    'skim': 'Skim',
+    'concept': 'Concept',
+    'deep': 'Deep',
+    'exam': 'Exam',
+  };
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: context.responsive.sp(10)),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(
-          horizontal: context.responsive.wp(14),
-          vertical: context.responsive.sp(10),
-        ),
+      padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(24)),
+      child: Container(
+        padding: EdgeInsets.all(context.responsive.sp(12)),
         decoration: BoxDecoration(
-          color: isCurrent
-              ? stage.color.withValues(alpha: 0.1)
-              : const Color(0xFF1E233D).withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(context.responsive.sp(10)),
-          border: Border.all(
-            color: isCurrent
-                ? stage.color.withValues(alpha: 0.4)
-                : Colors.white.withValues(alpha: 0.05),
-          ),
+          color: const Color(0xFF1E233D),
+          borderRadius: BorderRadius.circular(context.responsive.sp(12)),
+          border: Border.all(color: Colors.white10),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Status indicator
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: context.responsive.sp(28),
-              height: context.responsive.sp(28),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted
-                    ? Colors.green.withValues(alpha: 0.15)
-                    : isCurrent
-                        ? stage.color.withValues(alpha: 0.15)
-                        : Colors.white.withValues(alpha: 0.04),
+            Text(
+              'Reading Preferences',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: context.responsive.sp(12),
+                fontWeight: FontWeight.w600,
               ),
-              child: isCompleted
-                  ? Icon(
-                      Icons.check_rounded,
-                      color: Colors.green,
-                      size: context.responsive.sp(14),
-                    )
-                  : isCurrent
-                      ? AnimatedBuilder(
-                          animation: pulseAnim,
-                          builder: (_, _) => Icon(
-                            stage.icon,
-                            color: stage.color,
-                            size: context.responsive.sp(14),
-                          ),
-                        )
-                      : Icon(
-                          stage.icon,
-                          color: Colors.white24,
-                          size: context.responsive.sp(14),
+            ),
+            SizedBox(height: context.responsive.sp(10)),
+            Row(
+              children: _modes.map((mode) {
+                final selected = selectedMode == mode;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => onModeChanged(mode),
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        right: mode != _modes.last
+                            ? context.responsive.wp(6)
+                            : 0,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.responsive.sp(7),
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? const Color(0xFFB062FF)
+                            : const Color(0xFF0F1626),
+                        borderRadius:
+                            BorderRadius.circular(context.responsive.sp(8)),
+                        border: Border.all(
+                          color: selected
+                              ? const Color(0xFFB062FF)
+                              : Colors.white12,
                         ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _modeLabels[mode] ?? mode,
+                          style: TextStyle(
+                            color:
+                                selected ? Colors.white : Colors.white54,
+                            fontSize: context.responsive.sp(11),
+                            fontWeight: selected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-
-            SizedBox(width: context.responsive.wp(12)),
-
-            // Title
-            Expanded(
-              child: Text(
-                stage.title,
-                style: TextStyle(
-                  color: isCompleted
-                      ? Colors.green
-                      : isCurrent
-                          ? Colors.white
-                          : Colors.white30,
-                  fontSize: context.responsive.sp(12.5),
-                  fontWeight:
-                      isCurrent ? FontWeight.w600 : FontWeight.normal,
+            SizedBox(height: context.responsive.sp(10)),
+            Row(
+              children: [
+                Text(
+                  'Daily reading:',
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: context.responsive.sp(12),
+                  ),
                 ),
-              ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    if (dailyMinutes > 5) onMinutesChanged(dailyMinutes - 5);
+                  },
+                  child: Container(
+                    width: context.responsive.sp(28),
+                    height: context.responsive.sp(28),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F1626),
+                      borderRadius:
+                          BorderRadius.circular(context.responsive.sp(6)),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: Icon(Icons.remove,
+                        color: Colors.white54,
+                        size: context.responsive.sp(14)),
+                  ),
+                ),
+                SizedBox(width: context.responsive.wp(10)),
+                Text(
+                  '$dailyMinutes min',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: context.responsive.sp(13),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: context.responsive.wp(10)),
+                GestureDetector(
+                  onTap: () {
+                    if (dailyMinutes < 180) onMinutesChanged(dailyMinutes + 5);
+                  },
+                  child: Container(
+                    width: context.responsive.sp(28),
+                    height: context.responsive.sp(28),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F1626),
+                      borderRadius:
+                          BorderRadius.circular(context.responsive.sp(6)),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: Icon(Icons.add,
+                        color: Colors.white54,
+                        size: context.responsive.sp(14)),
+                  ),
+                ),
+              ],
             ),
-
-            // Status text
-            if (isCompleted)
-              Text(
-                'Done',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontSize: context.responsive.sp(11),
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            else if (isCurrent)
-              _DotsLoader(color: stage.color)
-            else
-              Text(
-                'Waiting',
-                style: TextStyle(
-                  color: Colors.white24,
-                  fontSize: context.responsive.sp(11),
-                ),
-              ),
           ],
         ),
       ),
@@ -754,52 +838,174 @@ class _StageStepRow extends StatelessWidget {
   }
 }
 
-// ── Animated dots loader ───────────────────────────────────────────────────────
+class _SuccessView extends StatelessWidget {
+  final String bookId;
+  final String bookTitle;
+  final VoidCallback onOpen;
+  final VoidCallback onClose;
 
-class _DotsLoader extends StatefulWidget {
-  final Color color;
-  const _DotsLoader({required this.color});
-
-  @override
-  State<_DotsLoader> createState() => _DotsLoaderState();
-}
-
-class _DotsLoaderState extends State<_DotsLoader>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const _SuccessView({
+    super.key,
+    required this.bookId,
+    required this.bookTitle,
+    required this.onOpen,
+    required this.onClose,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (_, _) {
-        final frame = (_ctrl.value * 4).floor() % 4;
-        final dots = '.' * (frame + 1);
-        return Text(
-          dots,
-          style: TextStyle(
-            color: widget.color,
-            fontSize: context.responsive.sp(14),
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.responsive.wp(24),
+        vertical: context.responsive.sp(8),
+      ),
+      child: Column(
+        children: [
+          _DragHandle(),
+          SizedBox(height: context.responsive.sp(32)),
+          Container(
+            width: context.responsive.sp(80),
+            height: context.responsive.sp(80),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFF10B981).withValues(alpha: 0.15),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                  blurRadius: 24,
+                  spreadRadius: 4,
+                ),
+              ],
+            ),
+            child: Icon(Icons.check_rounded,
+                color: const Color(0xFF10B981),
+                size: context.responsive.sp(40)),
           ),
-        );
-      },
+          SizedBox(height: context.responsive.sp(20)),
+          Text(
+            'Book Ready!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: context.responsive.sp(22),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: context.responsive.sp(8)),
+          Text(
+            bookTitle.isNotEmpty
+                ? '"$bookTitle" has been processed and added to your library.'
+                : 'Your book has been processed and added to your library.',
+            style: TextStyle(
+                color: Colors.white60, fontSize: context.responsive.sp(13)),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: context.responsive.sp(32)),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onOpen,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFB062FF),
+                padding:
+                    EdgeInsets.symmetric(vertical: context.responsive.sp(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(context.responsive.sp(12))),
+              ),
+              child: const Text('Open Book',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          SizedBox(height: context.responsive.sp(10)),
+          SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              onPressed: onClose,
+              child: Text('Go to Library',
+                  style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: context.responsive.sp(13))),
+            ),
+          ),
+          SizedBox(height: context.responsive.sp(8)),
+        ],
+      ),
+    );
+  }
+}
+
+// â”€â”€ Error View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class _ErrorView extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorView({
+    super.key,
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.responsive.wp(24),
+        vertical: context.responsive.sp(8),
+      ),
+      child: Column(
+        children: [
+          _DragHandle(),
+          SizedBox(height: context.responsive.sp(32)),
+          Container(
+            width: context.responsive.sp(72),
+            height: context.responsive.sp(72),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.redAccent.withValues(alpha: 0.12),
+            ),
+            child: Icon(Icons.error_outline_rounded,
+                color: Colors.redAccent, size: context.responsive.sp(36)),
+          ),
+          SizedBox(height: context.responsive.sp(20)),
+          Text(
+            'Upload Failed',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: context.responsive.sp(20),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: context.responsive.sp(10)),
+          Text(
+            message,
+            style: TextStyle(
+                color: Colors.white54, fontSize: context.responsive.sp(13)),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: context.responsive.sp(28)),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+              label: const Text('Try Again',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFB062FF),
+                padding:
+                    EdgeInsets.symmetric(vertical: context.responsive.sp(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(context.responsive.sp(12))),
+              ),
+            ),
+          ),
+          SizedBox(height: context.responsive.sp(8)),
+        ],
+      ),
     );
   }
 }
@@ -855,12 +1061,12 @@ class _UploadFormView extends StatelessWidget {
 
           SizedBox(height: context.responsive.sp(24)),
 
-          // ── What Happens Next panel — shown FIRST so user reads before uploading
+          // â”€â”€ What Happens Next panel â€” shown FIRST so user reads before uploading
           _WhatHappensNextPanel(),
 
           SizedBox(height: context.responsive.sp(24)),
 
-          // ── PDF Upload Section ──────────────────────────────────────────────
+          // â”€â”€ PDF Upload Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           GestureDetector(
             onTap: onPickFile,
             child: AnimatedContainer(
@@ -938,7 +1144,7 @@ class _UploadFormView extends StatelessWidget {
                     ),
                     SizedBox(height: context.responsive.sp(4)),
                     Text(
-                      'Max 50MB — AI will create chapters automatically',
+                      'Max 50MB â€” AI will create chapters automatically',
                       style: TextStyle(
                         color: Colors.white30,
                         fontSize: context.responsive.sp(10),
@@ -953,7 +1159,7 @@ class _UploadFormView extends StatelessWidget {
 
           SizedBox(height: context.responsive.sp(20)),
 
-          // ── Book Details Form ───────────────────────────────────────────────
+          // â”€â”€ Book Details Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Form(
             key: formKey,
             child: Column(
@@ -993,7 +1199,7 @@ class _UploadFormView extends StatelessWidget {
 
                 SizedBox(height: context.responsive.sp(24)),
 
-                // ── Upload Button ─────────────────────────────────────────────
+                // â”€â”€ Upload Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -1033,7 +1239,7 @@ class _UploadFormView extends StatelessWidget {
   }
 }
 
-// ── What Happens Next Panel ───────────────────────────────────────────────────
+// â”€â”€ What Happens Next Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _WhatHappensNextPanel extends StatelessWidget {
   @override
@@ -1041,7 +1247,7 @@ class _WhatHappensNextPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Section header ────────────────────────────────────────────────────
+        // â”€â”€ Section header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         Row(
           children: [
             ShaderMask(
@@ -1049,7 +1255,7 @@ class _WhatHappensNextPanel extends StatelessWidget {
                 colors: [Color(0xFFB062FF), Color(0xFF3861FB)],
               ).createShader(bounds),
               child: Text(
-                '✦',
+                'âœ¦',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: context.responsive.sp(14),
@@ -1071,7 +1277,7 @@ class _WhatHappensNextPanel extends StatelessWidget {
 
         SizedBox(height: context.responsive.sp(12)),
 
-        // ── Feature cards — 2 × 2 ─────────────────────────────────────────────
+        // â”€â”€ Feature cards â€” 2 Ã— 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
@@ -1086,7 +1292,7 @@ class _WhatHappensNextPanel extends StatelessWidget {
 
         SizedBox(height: context.responsive.sp(14)),
 
-        // ── Tips card ─────────────────────────────────────────────────────────
+        // â”€â”€ Tips card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         Container(
           width: double.infinity,
           padding: EdgeInsets.all(context.responsive.sp(14)),
@@ -1156,7 +1362,7 @@ class _WhatHappensNextPanel extends StatelessWidget {
   }
 }
 
-// ── Feature Chip (redesigned) ─────────────────────────────────────────────────
+// â”€â”€ Feature Chip (redesigned) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const _chipGradients = [
   [Color(0xFFB062FF), Color(0xFF6E3FD1)],
@@ -1242,7 +1448,7 @@ class _FeatureChip extends StatelessWidget {
   }
 }
 
-// ── Drag Handle ────────────────────────────────────────────────────────────────
+// â”€â”€ Drag Handle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _DragHandle extends StatelessWidget {
   @override

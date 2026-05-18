@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/book_detail_entity.dart';
 import '../../../../core/utils/responsive_utils.dart';
-import '../../profile/controllers/reading_plan_controller.dart';
 
-class BookStatsRow extends ConsumerWidget {
+class BookStatsRow extends StatelessWidget {
   final BookDetailEntity book;
 
   const BookStatsRow({super.key, required this.book});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final readingPlan = ref.watch(readingPlanProvider);
-    
-    // Calculate days left: assume 1.5 minutes per page
-    final totalMinutesLeft = book.pagesLeft * 1.5;
-    final dailyMinutes = readingPlan.dailyMinutes > 0 ? readingPlan.dailyMinutes : 45;
-    final daysLeft = (totalMinutesLeft / dailyMinutes).ceil();
+  Widget build(BuildContext context) {
+    final daysLabel = book.daysLeftToFinish > 0
+        ? '${book.daysLeftToFinish}d'
+        : '—';
 
     return Row(
       children: [
@@ -24,7 +19,7 @@ class BookStatsRow extends ConsumerWidget {
          SizedBox(width: context.responsive.wp(12)),
          Expanded(child: _StatBox(value: book.flashcardsCount.toString(), label: 'Flashcards', context: context)),
          SizedBox(width: context.responsive.wp(12)),
-         Expanded(child: _StatBox(value: '$daysLeft days', label: 'To Finish', context: context)),
+         Expanded(child: _StatBox(value: daysLabel, label: 'To Finish', context: context)),
       ],
     );
   }

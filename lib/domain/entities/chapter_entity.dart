@@ -6,7 +6,8 @@ class ChapterEntity {
   final String pageRange;
   final bool isCompleted;
   final bool isActive; // Identifies the currently reading chapter
-  final bool isLocked; 
+  final bool isLocked;
+  final String chapterSource;
 
   const ChapterEntity({
     required this.id,
@@ -17,6 +18,7 @@ class ChapterEntity {
     this.isCompleted = false,
     this.isActive = false,
     this.isLocked = false,
+    this.chapterSource = 'manual',
   });
 
   ChapterEntity copyWith({
@@ -28,6 +30,7 @@ class ChapterEntity {
     bool? isCompleted,
     bool? isActive,
     bool? isLocked,
+    String? chapterSource,
   }) {
     return ChapterEntity(
       id: id ?? this.id,
@@ -38,6 +41,7 @@ class ChapterEntity {
       isCompleted: isCompleted ?? this.isCompleted,
       isActive: isActive ?? this.isActive,
       isLocked: isLocked ?? this.isLocked,
+      chapterSource: chapterSource ?? this.chapterSource,
     );
   }
 }

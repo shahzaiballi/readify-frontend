@@ -78,6 +78,7 @@ class BookRepositoryImpl implements BookRepository {
       isCompleted: _toBool(json['isCompleted']),
       isActive: _toBool(json['isActive']),
       isLocked: _toBool(json['isLocked']),
+      chapterSource: json['chapterSource'] ?? 'manual',
     );
   }
 
@@ -89,6 +90,8 @@ class BookRepositoryImpl implements BookRepository {
           ? 2
           : _toInt(json['estimatedMinutes']),
       chunkIndex: _toInt(json['chunkIndex']),
+      dayNumber: _toInt(json['dayNumber']) == 0 ? 1 : _toInt(json['dayNumber']),
+      wordsCount: _toInt(json['wordsCount']),
     );
   }
 

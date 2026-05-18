@@ -15,6 +15,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
   late double _dailyMinutes;
   late int _daysPerWeek;
   late String _preferredTime;
+  late String _readingMode;
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
     _dailyMinutes = currentPlan.dailyMinutes.toDouble();
     _daysPerWeek = currentPlan.daysPerWeek;
     _preferredTime = currentPlan.preferredTime;
+    _readingMode = currentPlan.readingMode;
   }
 
   void _savePlan() {
@@ -30,6 +32,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
       dailyMinutes: _dailyMinutes.toInt(),
       daysPerWeek: _daysPerWeek,
       preferredTime: _preferredTime,
+      readingMode: _readingMode,
     );
     
     ScaffoldMessenger.of(context).showSnackBar(
@@ -229,6 +232,55 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
                        )
                     ),
 
+                    SizedBox(height: context.responsive.sp(20)),
+
+                    // Reading Mode
+                    _buildSectionContainer(
+                       context: context,
+                       icon: Icons.auto_stories,
+                       title: 'Reading Mode',
+                       subtitle: 'How deeply do you want to engage?',
+                       child: Column(
+                          children: [
+                             _ReadingModeOption(
+                               mode: 'skim',
+                               label: 'Skim',
+                               description: 'Key points only — fast overview',
+                               emoji: '⚡',
+                               selected: _readingMode == 'skim',
+                               onTap: () => setState(() => _readingMode = 'skim'),
+                             ),
+                             SizedBox(height: context.responsive.sp(8)),
+                             _ReadingModeOption(
+                               mode: 'concept',
+                               label: 'Concept',
+                               description: 'Core ideas and connections',
+                               emoji: '💡',
+                               selected: _readingMode == 'concept',
+                               onTap: () => setState(() => _readingMode = 'concept'),
+                             ),
+                             SizedBox(height: context.responsive.sp(8)),
+                             _ReadingModeOption(
+                               mode: 'deep',
+                               label: 'Deep',
+                               description: 'Full comprehension — default',
+                               emoji: '🧠',
+                               selected: _readingMode == 'deep',
+                               onTap: () => setState(() => _readingMode = 'deep'),
+                             ),
+                             SizedBox(height: context.responsive.sp(8)),
+                             _ReadingModeOption(
+                               mode: 'exam',
+                               label: 'Exam',
+                               description: 'Heavy recall + flashcard focus',
+                               emoji: '🎯',
+                               selected: _readingMode == 'exam',
+                               onTap: () => setState(() => _readingMode = 'exam'),
+                             ),
+                          ],
+                       ),
+                    ),
+
                     SizedBox(height: context.responsive.sp(24)),
                     Text('Preferred Reading Time', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(15), fontWeight: FontWeight.bold)),
                     SizedBox(height: context.responsive.sp(12)),
@@ -392,6 +444,86 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
            ],
         ),
      );
+  }
+}
+
+// ── Reading Mode Option ────────────────────────────────────────────────────────
+
+class _ReadingModeOption extends StatelessWidget {
+  final String mode;
+  final String label;
+  final String description;
+  final String emoji;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ReadingModeOption({
+    required this.mode,
+    required this.label,
+    required this.description,
+    required this.emoji,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.responsive.wp(14),
+          vertical: context.responsive.sp(12),
+        ),
+        decoration: BoxDecoration(
+          color: selected
+              ? const Color(0xFFB062FF).withOpacity(0.12)
+              : const Color(0xFF0F1626),
+          borderRadius: BorderRadius.circular(context.responsive.sp(10)),
+          border: Border.all(
+            color: selected
+                ? const Color(0xFFB062FF)
+                : Colors.white.withOpacity(0.08),
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: TextStyle(fontSize: context.responsive.sp(20))),
+            SizedBox(width: context.responsive.wp(12)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? const Color(0xFFB062FF) : Colors.white,
+                      fontSize: context.responsive.sp(13),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: context.responsive.sp(11),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (selected)
+              Icon(
+                Icons.check_circle_rounded,
+                color: const Color(0xFFB062FF),
+                size: context.responsive.sp(18),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
