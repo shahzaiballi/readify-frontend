@@ -5,6 +5,7 @@ import '../../../data/network/api_client.dart';
 import '../../../domain/entities/user_credentials.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../../domain/repositories/auth_repository.dart';
+import '../../../core/navigation/app_router.dart';
 
 // ── Repository Provider ───────────────────────────────────────────────────────
 // Switched from MockAuthRepository to the real implementation.
@@ -59,6 +60,8 @@ class AuthController extends AsyncNotifier<UserEntity?> {
           password: password,
         ),
       );
+      final prefs = ref.read(sharedPreferencesProvider);
+      await prefs.setBool('needsProfileSetup', true);
       state = AsyncData(user);
     } catch (e, st) {
       state = AsyncError(e, st);

@@ -17,7 +17,6 @@ import '../widgets/custom_bottom_nav_bar.dart';
 
 import '../../library/pages/library_page.dart';
 import '../../library/pages/add_book_page.dart';
-import '../../discussions/pages/discussions_page.dart';
 import '../../community/pages/community_page.dart';
 import '../../profile/pages/profile_page.dart';
 import '../../profile/controllers/profile_controller.dart';
@@ -225,17 +224,8 @@ class _HomePageState extends ConsumerState<HomePage>
   // ================= UI COMPONENTS =================
 
   Widget _buildGlassHeader(AsyncValue profile) {
-    final profileData = profile.when(
-      data: (p) => p,
-      loading: () => null,
-      error: (_, _) => null,
-    );
-    
-    final name = profile.when(
-      data: (p) => (p.name ?? '').split(' ').first,
-      loading: () => '',
-      error: (_, _) => 'Reader',
-    );
+    final profileData = profile.valueOrNull;
+    final name = profileData?.name.split(' ').first ?? 'Reader';
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -275,6 +265,18 @@ class _HomePageState extends ConsumerState<HomePage>
                             child: Image.network(
                               profileData.avatarUrl!,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(0xFFB062FF),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
                             ),
                           )
                         : Container(

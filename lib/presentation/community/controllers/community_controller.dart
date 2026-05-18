@@ -110,21 +110,12 @@ class MessagesState {
   }
 }
 
-class MessagesController extends AutoDisposeFamilyNotifier<MessagesState, String> {
-  Timer? _pollTimer;
+class MessagesController extends FamilyNotifier<MessagesState, String> {
 
   @override
   MessagesState build(String arg) {
-    ref.onDispose(() => _pollTimer?.cancel());
     _loadMessages();
-    _startPolling();
     return const MessagesState(isLoading: true);
-  }
-
-  void _startPolling() {
-    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      _loadMessages(silent: true);
-    });
   }
 
   Future<void> _loadMessages({bool silent = false}) async {
@@ -199,8 +190,7 @@ class MessagesController extends AutoDisposeFamilyNotifier<MessagesState, String
   Future<void> refresh() => _loadMessages();
 }
 
-final messagesControllerProvider = NotifierProvider.autoDispose
-    .family<MessagesController, MessagesState, String>(
+final messagesControllerProvider = NotifierProvider.family<MessagesController, MessagesState, String>(
   MessagesController.new,
 );
 

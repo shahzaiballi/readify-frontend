@@ -175,13 +175,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
         const Color(0xFF00B4D8),
         () => context.push('/book_summary/${book.id}'),
       ),
-      (
-        'Discussions',
-        'Join the conversation',
-        Icons.chat_bubble_rounded,
-        const Color(0xFFE83E8C),
-        () => context.push('/all_discussions?bookId=${book.id}'),
-      ),
     ];
 
     return List.generate(actions.length, (i) {
@@ -205,7 +198,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             icon: actions[i].$3,
             iconColor: actions[i].$4,
             onTap: actions[i].$5,
-            hasNotification: actions[i].$1 == 'Discussions',
+            hasNotification: false,
           ),
         ),
       );

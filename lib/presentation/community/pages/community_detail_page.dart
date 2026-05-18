@@ -9,13 +9,28 @@ import '../../../../core/utils/responsive_utils.dart';
 import '../../../../domain/entities/community_entity.dart';
 import '../controllers/community_controller.dart';
 
-class CommunityDetailPage extends ConsumerWidget {
+class CommunityDetailPage extends ConsumerStatefulWidget {
   final String communityId;
 
   const CommunityDetailPage({super.key, required this.communityId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CommunityDetailPage> createState() => _CommunityDetailPageState();
+}
+
+class _CommunityDetailPageState extends ConsumerState<CommunityDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+    // System Design: Prefetch messages as soon as community is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(messagesControllerProvider(widget.communityId).notifier);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final communityId = widget.communityId;
     final communityAsync = ref.watch(communityDetailProvider(communityId));
     final membersAsync = ref.watch(communityMembersProvider(communityId));
     final actionController = ref.read(communityActionProvider.notifier);

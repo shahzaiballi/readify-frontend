@@ -13,8 +13,8 @@ class OnboardingMockData {
       icon: 'Icons.track_changes_rounded',
     ),
     OnboardingEntity(
-      title: 'Learn and Discuss\nwith Readers',
-      subtitle: 'Join vibrant discussions and connect\nwith fellow book lovers',
+      title: 'Connect with the\nCommunity',
+      subtitle: 'Join vibrant communities and connect\nwith fellow book lovers',
       icon: 'Icons.groups_rounded',
     ),
   ];

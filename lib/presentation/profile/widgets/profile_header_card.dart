@@ -32,11 +32,18 @@ class ProfileHeaderCard extends StatelessWidget {
                      end: Alignment.bottomRight,
                   ),
                ),
-               child: CircleAvatar(
-                 radius: context.responsive.sp(36),
-                 backgroundImage: NetworkImage(userProfile.avatarUrl),
-                 backgroundColor: Colors.transparent,
-               ),
+               child: userProfile.avatarUrl.isNotEmpty
+                   ? ClipRRect(
+                       borderRadius: BorderRadius.circular(context.responsive.sp(36)),
+                       child: Image.network(
+                         userProfile.avatarUrl,
+                         width: context.responsive.sp(72),
+                         height: context.responsive.sp(72),
+                         fit: BoxFit.cover,
+                         errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(context),
+                       ),
+                     )
+                   : _buildDefaultAvatar(context),
              ),
              SizedBox(height: context.responsive.sp(12)),
              Text(
@@ -76,6 +83,22 @@ class ProfileHeaderCard extends StatelessWidget {
           text,
           style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(11), fontWeight: FontWeight.w600),
        ),
+    );
+  }
+
+  Widget _buildDefaultAvatar(BuildContext context) {
+    return Container(
+      width: context.responsive.sp(72),
+      height: context.responsive.sp(72),
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFB062FF),
+      ),
+      child: Icon(
+        Icons.person_rounded,
+        color: Colors.white,
+        size: context.responsive.sp(36),
+      ),
     );
   }
 }

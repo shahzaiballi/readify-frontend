@@ -491,6 +491,13 @@ class _MyCommunitiesView extends ConsumerWidget {
         final filtered =
             all.where((c) => c.communityType == type).toList();
 
+        // System Design: Prefetch messages for joined communities in the background
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          for (final c in filtered) {
+            ref.read(messagesControllerProvider(c.id).notifier);
+          }
+        });
+
         if (filtered.isEmpty) {
           return _EmptyState(
             icon: Icons.groups_outlined,

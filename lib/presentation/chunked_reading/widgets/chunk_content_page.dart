@@ -105,20 +105,6 @@ class _ChunkContentPageState extends State<ChunkContentPage> {
               (BuildContext context, EditableTextState editableTextState) {
             final List<ContextMenuButtonItem> buttonItems = [
               ContextMenuButtonItem(
-                label: 'Post to Discussion',
-                onPressed: () {
-                  final textSelection =
-                      editableTextState.textEditingValue.selection;
-                  final text = editableTextState.textEditingValue.text
-                      .substring(
-                        textSelection.start,
-                        textSelection.end,
-                      );
-                  editableTextState.hideToolbar();
-                  context.push('/new_discussion', extra: text);
-                },
-              ),
-              ContextMenuButtonItem(
                 label: 'Highlight',
                 onPressed: () {
                   editableTextState.hideToolbar();

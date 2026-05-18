@@ -9,6 +9,7 @@ import '../../presentation/auth/controllers/auth_controller.dart';
 
 // Auth & onboarding
 import '../../presentation/onboarding/pages/onboarding_page.dart';
+import '../../presentation/onboarding/pages/setup_profile_page.dart';
 import '../../presentation/auth/pages/login_page.dart';
 import '../../presentation/auth/pages/signup_page.dart';
 import '../../presentation/auth/pages/forgot_password_page.dart';
@@ -75,9 +76,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       final prefs = ref.read(sharedPreferencesProvider);
       final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+      final needsSetup = prefs.getBool('needsProfileSetup') ?? false;
 
       if (loggedIn) {
         if (location == '/onboarding' || location == '/login' || location == '/signup') {
+          return needsSetup ? '/setup_profile' : '/home';
+        }
+        
+        if (needsSetup && location != '/setup_profile') {
+          return '/setup_profile';
+        }
+        
+        if (!needsSetup && location == '/setup_profile') {
           return '/home';
         }
       } else {
@@ -110,6 +120,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     routes: [
       // Auth & onboarding
+      GoRoute(
+        path: '/setup_profile',
+        name: 'setup_profile',
+        builder: (_, __) => const SetupProfilePage(),
+      ),
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
