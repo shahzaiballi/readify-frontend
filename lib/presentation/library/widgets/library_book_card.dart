@@ -286,7 +286,11 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                               ),
                             ),
                             child: Text(
-                              'Continue',
+                              widget.book.status == LibraryStatus.inProgress
+                                  ? 'Continue'
+                                  : widget.book.status == LibraryStatus.completed
+                                      ? 'Read Again'
+                                      : 'Start',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: context.responsive.sp(11),

@@ -44,12 +44,6 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
 
   @override
   Widget build(BuildContext context) {
-     int weeklyReadingMins = _dailyMinutes.toInt() * _daysPerWeek;
-     // Mock math: Assume 235 pages left, reading rate ~ 1 page per minute
-     int totalDaysNeeded = (235 / _dailyMinutes).ceil();
-     int weeksNeeded = (totalDaysNeeded / _daysPerWeek).ceil();
-     int daysNeeded = totalDaysNeeded; // For flat count
-
      return Scaffold(
         backgroundColor: const Color(0xFF0F1626),
         appBar: AppBar(
@@ -66,13 +60,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
               ),
               onPressed: () => context.pop(), 
            ),
-           title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                 Text('Reading Plan', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(16), fontWeight: FontWeight.bold)),
-                 Text('Atomic Habits', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(12))),
-              ],
-           ),
+           title: Text('Reading Plan', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(16), fontWeight: FontWeight.bold)),
            centerTitle: false,
         ),
         body: SafeArea(
@@ -81,64 +69,6 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
               child: Column(
                  crossAxisAlignment: CrossAxisAlignment.stretch,
                  children: [
-                    // Mock Current Progress Card
-                    Container(
-                       padding: EdgeInsets.all(context.responsive.sp(20)),
-                       decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                             colors: [Color(0xFF381A5D), Color(0xFF1E2A4F)],
-                          ),
-                          borderRadius: BorderRadius.circular(context.responsive.sp(16)),
-                       ),
-                       child: Column(
-                          children: [
-                             Row(
-                                children: [
-                                   Container(
-                                      padding: EdgeInsets.all(context.responsive.sp(10)),
-                                      decoration: BoxDecoration(
-                                         color: const Color(0xFFB062FF).withOpacity(0.2),
-                                         shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(Icons.track_changes, color: const Color(0xFFB062FF), size: context.responsive.sp(20)),
-                                   ),
-                                   SizedBox(width: context.responsive.wp(12)),
-                                   Expanded(
-                                      child: Column(
-                                         crossAxisAlignment: CrossAxisAlignment.start,
-                                         children: [
-                                            Text('Current Progress', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(15), fontWeight: FontWeight.bold)),
-                                            Text('Keep up the great work!', style: TextStyle(color: Colors.white70, fontSize: context.responsive.sp(12))),
-                                         ],
-                                      ),
-                                   )
-                                ],
-                             ),
-                             SizedBox(height: context.responsive.sp(20)),
-                             Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                   _buildProgressStat('18%', 'Complete', context),
-                                   _buildProgressStat('235', 'Pages Left', context),
-                                   _buildProgressStat('50', 'Pages Read', context),
-                                ],
-                             ),
-                             SizedBox(height: context.responsive.sp(16)),
-                             ClipRRect(
-                                borderRadius: BorderRadius.circular(context.responsive.sp(4)),
-                                child: LinearProgressIndicator(
-                                   value: 0.18,
-                                   backgroundColor: Colors.white12,
-                                   valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFB062FF)),
-                                   minHeight: context.responsive.sp(6),
-                                ),
-                             )
-                          ],
-                       ),
-                    ),
-                    
-                    SizedBox(height: context.responsive.sp(20)),
-
                     // Daily Reading Time
                     _buildSectionContainer(
                        context: context,
@@ -290,38 +220,6 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
                     _buildTimeChoice(context, 'Afternoon', '12PM - 6PM', Icons.wb_twilight),
                     _buildTimeChoice(context, 'Evening', '6PM - 12AM', Icons.nights_stay_outlined),
 
-                    SizedBox(height: context.responsive.sp(24)),
-
-                    // Output Calc Block
-                    Container(
-                       padding: EdgeInsets.all(context.responsive.sp(20)),
-                       decoration: BoxDecoration(
-                          color: const Color(0xFF1E233D),
-                          borderRadius: BorderRadius.circular(context.responsive.sp(16)),
-                       ),
-                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                             Text('Estimated Completion', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(15), fontWeight: FontWeight.bold)),
-                             SizedBox(height: context.responsive.sp(20)),
-                             _buildCalcRow('Daily Time:', '${_dailyMinutes.toInt()} minutes', context),
-                             SizedBox(height: context.responsive.sp(12)),
-                             _buildCalcRow('Days per Week:', '$_daysPerWeek days', context),
-                             SizedBox(height: context.responsive.sp(12)),
-                             _buildCalcRow('Preferred Time:', _preferredTime, context),
-                             
-                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: context.responsive.sp(16)),
-                                child: const Divider(color: Colors.white12, thickness: 1),
-                             ),
-
-                             _buildCalcRow('Weekly Reading:', '$weeklyReadingMins minutes', context, true),
-                             SizedBox(height: context.responsive.sp(12)),
-                             _buildCalcRow('Finish in approximately:', '$weeksNeeded weeks ($daysNeeded days)', context, true),
-                          ],
-                       ),
-                    ),
-
                     SizedBox(height: context.responsive.sp(32)),
 
                     // Save Plan Button
@@ -386,32 +284,6 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
      );
   }
 
-  Widget _buildCalcRow(String label, String value, BuildContext context, [bool isHighlight = false]) {
-     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-           Text(label, style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(13))),
-           Text(
-              value, 
-              style: TextStyle(
-                 color: isHighlight ? const Color(0xFFB062FF) : Colors.white, 
-                 fontSize: context.responsive.sp(13), 
-                 fontWeight: FontWeight.bold
-              )
-           ),
-        ],
-     );
-  }
-
-  Widget _buildProgressStat(String value, String label, BuildContext context) {
-     return Column(
-        children: [
-           Text(value, style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(18), fontWeight: FontWeight.bold)),
-           SizedBox(height: context.responsive.sp(4)),
-           Text(label, style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(11))),
-        ],
-     );
-  }
 
   Widget _buildSectionContainer({required BuildContext context, required IconData icon, required String title, required String subtitle, required Widget child}) {
      return Container(

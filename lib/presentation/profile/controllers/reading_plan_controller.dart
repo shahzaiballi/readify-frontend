@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../domain/entities/reading_plan_entity.dart';
+import '../../../../core/navigation/app_router.dart';
 
 class ReadingPlanController extends Notifier<ReadingPlanEntity> {
   static const _keyDailyMinutes = 'rp_daily_minutes';
@@ -10,13 +10,8 @@ class ReadingPlanController extends Notifier<ReadingPlanEntity> {
 
   @override
   ReadingPlanEntity build() {
-    _loadFromPrefs();
-    return const ReadingPlanEntity();
-  }
-
-  Future<void> _loadFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    state = ReadingPlanEntity(
+    final prefs = ref.read(sharedPreferencesProvider);
+    return ReadingPlanEntity(
       dailyMinutes: prefs.getInt(_keyDailyMinutes) ?? 30,
       daysPerWeek: prefs.getInt(_keyDaysPerWeek) ?? 5,
       preferredTime: prefs.getString(_keyPreferredTime) ?? 'Evening',
@@ -36,7 +31,7 @@ class ReadingPlanController extends Notifier<ReadingPlanEntity> {
       preferredTime: preferredTime,
       readingMode: readingMode,
     );
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = ref.read(sharedPreferencesProvider);
     await Future.wait([
       prefs.setInt(_keyDailyMinutes, state.dailyMinutes),
       prefs.setInt(_keyDaysPerWeek, state.daysPerWeek),
