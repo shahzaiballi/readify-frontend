@@ -70,7 +70,7 @@ class AddBookController extends Notifier<UploadFlowState> {
     Uint8List? fileBytes,
     String? fileName,
     required String readingMode,
-    required int dailyMinutes,
+    required int pagesPerDay,
   }) async {
     state = const UploadInProgress(stage: 'Uploading your PDF...', progress: 0.1);
 
@@ -85,7 +85,7 @@ class AddBookController extends Notifier<UploadFlowState> {
           'title': title,
           if (author.trim().isNotEmpty) 'author': author.trim(),
           'reading_mode': readingMode,
-          'daily_minutes': dailyMinutes.toString(),
+          'pages_per_day': pagesPerDay.toString(),
         },
       );
 
@@ -181,7 +181,7 @@ class AddBookController extends Notifier<UploadFlowState> {
     required String bookId,
     required List<Map<String, dynamic>> editedChapters,
     String readingMode = 'deep',
-    int dailyMinutes = 30,
+    int pagesPerDay = 10,
   }) async {
     if (state is! UploadAwaitingConfirm) return;
     final current = state as UploadAwaitingConfirm;
@@ -194,7 +194,7 @@ class AddBookController extends Notifier<UploadFlowState> {
         body: {
           'chapters': editedChapters,
           'reading_mode': readingMode,
-          'daily_minutes': dailyMinutes,
+          'pages_per_day': pagesPerDay,
         },
       );
       // Restart polling for schedule completion

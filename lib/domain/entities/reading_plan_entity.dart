@@ -1,24 +1,24 @@
 class ReadingPlanEntity {
-  final int dailyMinutes;
+  final int pagesPerDay;
   final int daysPerWeek;
   final String preferredTime;
   final String readingMode;
 
   const ReadingPlanEntity({
-    this.dailyMinutes = 30,
+    this.pagesPerDay = 10,
     this.daysPerWeek = 5,
     this.preferredTime = 'Evening',
     this.readingMode = 'deep',
   });
 
   ReadingPlanEntity copyWith({
-    int? dailyMinutes,
+    int? pagesPerDay,
     int? daysPerWeek,
     String? preferredTime,
     String? readingMode,
   }) {
     return ReadingPlanEntity(
-      dailyMinutes: dailyMinutes ?? this.dailyMinutes,
+      pagesPerDay: pagesPerDay ?? this.pagesPerDay,
       daysPerWeek: daysPerWeek ?? this.daysPerWeek,
       preferredTime: preferredTime ?? this.preferredTime,
       readingMode: readingMode ?? this.readingMode,

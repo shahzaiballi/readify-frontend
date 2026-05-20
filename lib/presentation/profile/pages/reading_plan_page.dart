@@ -12,7 +12,7 @@ class ReadingPlanPage extends ConsumerStatefulWidget {
 }
 
 class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
-  late double _dailyMinutes;
+   late double _pagesPerDay;
   late int _daysPerWeek;
   late String _preferredTime;
   late String _readingMode;
@@ -21,7 +21,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
   void initState() {
     super.initState();
     final currentPlan = ref.read(readingPlanProvider);
-    _dailyMinutes = currentPlan.dailyMinutes.toDouble();
+      _pagesPerDay = currentPlan.pagesPerDay.toDouble();
     _daysPerWeek = currentPlan.daysPerWeek;
     _preferredTime = currentPlan.preferredTime;
     _readingMode = currentPlan.readingMode;
@@ -29,7 +29,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
 
   void _savePlan() {
     ref.read(readingPlanProvider.notifier).updatePlan(
-      dailyMinutes: _dailyMinutes.toInt(),
+         pagesPerDay: _pagesPerDay.toInt(),
       daysPerWeek: _daysPerWeek,
       preferredTime: _preferredTime,
       readingMode: _readingMode,
@@ -69,19 +69,19 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
               child: Column(
                  crossAxisAlignment: CrossAxisAlignment.stretch,
                  children: [
-                    // Daily Reading Time
+                    // Daily Reading Goal
                     _buildSectionContainer(
                        context: context,
-                       icon: Icons.access_time_filled,
-                       title: 'Daily Reading Time',
-                       subtitle: 'How long do you want to read each day?',
+                       icon: Icons.menu_book_rounded,
+                       title: 'Daily Reading Goal',
+                       subtitle: 'How many pages can you read each day?',
                        child: Column(
                           children: [
                              Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                   Text('Minutes per day', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(13))),
-                                   Text('${_dailyMinutes.toInt()} min', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(18), fontWeight: FontWeight.bold)),
+                                   Text('Pages per day', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(13))),
+                                   Text('${_pagesPerDay.toInt()} pages', style: TextStyle(color: Colors.white, fontSize: context.responsive.sp(18), fontWeight: FontWeight.bold)),
                                 ],
                              ),
                              SizedBox(height: context.responsive.sp(8)),
@@ -94,20 +94,20 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
                                    trackHeight: context.responsive.sp(4),
                                 ),
                                 child: Slider(
-                                   value: _dailyMinutes,
-                                   min: 15,
-                                   max: 180,
-                                   divisions: 33, // 5 min increments
+                                   value: _pagesPerDay,
+                                   min: 1,
+                                   max: 100,
+                                   divisions: 99,
                                    onChanged: (val) {
-                                      setState(() => _dailyMinutes = val);
+                                      setState(() => _pagesPerDay = val);
                                    },
                                 ),
                              ),
                              Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                   Text('15 min', style: TextStyle(color: Colors.white24, fontSize: context.responsive.sp(11))),
-                                   Text('180 min', style: TextStyle(color: Colors.white24, fontSize: context.responsive.sp(11))),
+                                   Text('1 pg', style: TextStyle(color: Colors.white24, fontSize: context.responsive.sp(11))),
+                                   Text('100 pg', style: TextStyle(color: Colors.white24, fontSize: context.responsive.sp(11))),
                                 ],
                              )
                           ],

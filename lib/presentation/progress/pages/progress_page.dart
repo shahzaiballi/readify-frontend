@@ -4,10 +4,10 @@ import '../../../core/utils/responsive_utils.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../library/controllers/library_controller.dart';
 import '../../../domain/entities/user_stats_entity.dart';
+import '../../../domain/entities/library_book_entity.dart';
 import '../widgets/reading_stats_card.dart';
 import '../widgets/progress_chart_widget.dart';
 import '../widgets/completed_books_widget.dart';
-import '../../../domain/entities/library_book_entity.dart';
 
 class ProgressPage extends ConsumerWidget {
   const ProgressPage({super.key});
@@ -15,7 +15,7 @@ class ProgressPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final insightsAsync = ref.watch(insightsProvider);
-    final libraryBooksAsync = ref.watch(libraryBooksProvider);
+    final rawLibraryAsync = ref.watch(rawLibraryProvider);
     final currentProgressAsync = ref.watch(currentProgressProvider);
 
     return SafeArea(
@@ -56,7 +56,12 @@ class ProgressPage extends ConsumerWidget {
           // Reading Stats
           SliverToBoxAdapter(
             child: insightsAsync.when(
-              data: (insights) => _buildStatsSection(context, insights),
+              data: (insights) {
+                final booksRead = rawLibraryAsync.valueOrNull
+                    ?.where((b) => b.status == LibraryStatus.completed)
+                    .length ?? 0;
+                return _buildStatsSection(context, insights, booksRead);
+              },
               loading: () => _buildLoadingStatsSection(context),
               error: (e, _) => _buildErrorWidget(context),
             ),
@@ -102,16 +107,11 @@ class ProgressPage extends ConsumerWidget {
           SliverToBoxAdapter(child: SizedBox(height: context.responsive.sp(12))),
 
           SliverToBoxAdapter(
-            child: libraryBooksAsync.when(
+            child: rawLibraryAsync.when(
               data: (books) {
-                // Filter completed books (100% progress)
-               final completedBooks = books.where((b) {
-  if (b is LibraryBookEntity) {
-    return b.progressPercent >= 100;
-  }
-  return false;
-}).toList();
-
+                final completedBooks = books
+                    .where((b) => b.status == LibraryStatus.completed)
+                    .toList();
                 return completedBooks.isNotEmpty
                     ? CompletedBooksWidget(books: completedBooks)
                     : _buildNoCompletedBooksState(context);
@@ -134,7 +134,7 @@ class ProgressPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsSection(BuildContext context, InsightsEntity insights) {
+  Widget _buildStatsSection(BuildContext context, InsightsEntity insights, int booksRead) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(20)),
       child: Column(
@@ -153,10 +153,10 @@ class ProgressPage extends ConsumerWidget {
               SizedBox(width: context.responsive.wp(12)),
               Expanded(
                 child: ReadingStatsCard(
-                  icon: Icons.timer_rounded,
-                  label: 'Read Today',
-                  value: '${insights.readTodayMinutes}',
-                  unit: 'min',
+                  icon: Icons.menu_book_rounded,
+                  label: 'Pages Today',
+                  value: '${insights.readTodayPages}',
+                  unit: 'pages',
                   backgroundColor: const Color(0xFF4ECDC4),
                 ),
               ),
@@ -177,10 +177,10 @@ class ProgressPage extends ConsumerWidget {
               SizedBox(width: context.responsive.wp(12)),
               Expanded(
                 child: ReadingStatsCard(
-                  icon: Icons.trending_up_rounded,
-                  label: 'Progress',
-                  value: '${DateTime.now().day}',
-                  unit: 'days',
+                  icon: Icons.menu_book_rounded,
+                  label: 'Books Read',
+                  value: '$booksRead',
+                  unit: 'books',
                   backgroundColor: const Color(0xFF6BCB77),
                 ),
               ),

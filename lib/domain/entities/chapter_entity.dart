@@ -3,6 +3,7 @@ class ChapterEntity {
   final String title;
   final int chapterNumber;
   final int durationInMinutes;
+  final int pagesCount;
   final String pageRange;
   final bool isCompleted;
   final bool isActive; // Identifies the currently reading chapter
@@ -14,6 +15,7 @@ class ChapterEntity {
     required this.title,
     required this.chapterNumber,
     required this.durationInMinutes,
+    this.pagesCount = 0,
     required this.pageRange,
     this.isCompleted = false,
     this.isActive = false,
@@ -26,6 +28,7 @@ class ChapterEntity {
     String? title,
     int? chapterNumber,
     int? durationInMinutes,
+    int? pagesCount,
     String? pageRange,
     bool? isCompleted,
     bool? isActive,
@@ -37,6 +40,7 @@ class ChapterEntity {
       title: title ?? this.title,
       chapterNumber: chapterNumber ?? this.chapterNumber,
       durationInMinutes: durationInMinutes ?? this.durationInMinutes,
+      pagesCount: pagesCount ?? this.pagesCount,
       pageRange: pageRange ?? this.pageRange,
       isCompleted: isCompleted ?? this.isCompleted,
       isActive: isActive ?? this.isActive,

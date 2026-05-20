@@ -142,7 +142,7 @@ class _AddBookPageState extends ConsumerState<AddBookPage> {
       fileBytes: _selectedFileBytes,
       fileName: _selectedFileName,
       readingMode: plan.readingMode,
-      dailyMinutes: plan.dailyMinutes,
+      pagesPerDay: plan.pagesPerDay,
     );
   }
 
@@ -211,13 +211,13 @@ class _AddBookPageState extends ConsumerState<AddBookPage> {
               bookId: bookId,
               uploadId: uploadId,
               chapters: chapters,
-              onConfirm: (edited, mode, minutes) => ref
+              onConfirm: (edited, mode, pages) => ref
                   .read(addBookControllerProvider.notifier)
                   .confirmChapters(
                     bookId: bookId,
                     editedChapters: edited,
                     readingMode: mode,
-                    dailyMinutes: minutes,
+                    pagesPerDay: pages,
                   ),
             ),
           UploadBuildingSchedule() => _ProcessingStateView(
@@ -450,7 +450,7 @@ class _ConfirmChaptersView extends ConsumerStatefulWidget {
   final Future<void> Function(
     List<Map<String, dynamic>> edited,
     String readingMode,
-    int dailyMinutes,
+    int pagesPerDay,
   ) onConfirm;
 
   const _ConfirmChaptersView({
@@ -471,7 +471,7 @@ class _ConfirmChaptersViewState
   late List<TextEditingController> _titleControllers;
   bool _confirming = false;
   String _readingMode = 'deep';
-  int _dailyMinutes = 30;
+  int _pagesPerDay = 10;
 
   @override
   void initState() {
@@ -481,7 +481,7 @@ class _ConfirmChaptersViewState
     }).toList();
     final plan = ref.read(readingPlanProvider);
     _readingMode = plan.readingMode;
-    _dailyMinutes = plan.dailyMinutes;
+    _pagesPerDay = plan.pagesPerDay;
   }
 
   @override
@@ -498,7 +498,7 @@ class _ConfirmChaptersViewState
         'title': _titleControllers[e.key].text.trim(),
       };
     }).toList();
-    await widget.onConfirm(edited, _readingMode, _dailyMinutes);
+    await widget.onConfirm(edited, _readingMode, _pagesPerDay);
   }
 
   @override
@@ -637,9 +637,9 @@ class _ConfirmChaptersViewState
         SizedBox(height: context.responsive.sp(12)),
         _ReadingPrefsSelector(
           selectedMode: _readingMode,
-          dailyMinutes: _dailyMinutes,
+          pagesPerDay: _pagesPerDay,
           onModeChanged: (m) => setState(() => _readingMode = m),
-          onMinutesChanged: (v) => setState(() => _dailyMinutes = v),
+          onPagesChanged: (v) => setState(() => _pagesPerDay = v),
         ),
         SizedBox(height: context.responsive.sp(12)),
         Padding(
@@ -685,15 +685,15 @@ class _ConfirmChaptersViewState
 
 class _ReadingPrefsSelector extends StatelessWidget {
   final String selectedMode;
-  final int dailyMinutes;
+  final int pagesPerDay;
   final ValueChanged<String> onModeChanged;
-  final ValueChanged<int> onMinutesChanged;
+  final ValueChanged<int> onPagesChanged;
 
   const _ReadingPrefsSelector({
     required this.selectedMode,
-    required this.dailyMinutes,
+    required this.pagesPerDay,
     required this.onModeChanged,
-    required this.onMinutesChanged,
+    required this.onPagesChanged,
   });
 
   static const _modes = ['skim', 'concept', 'deep', 'exam'];
@@ -776,7 +776,7 @@ class _ReadingPrefsSelector extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Daily reading:',
+                  'Pages per day:',
                   style: TextStyle(
                     color: Colors.white54,
                     fontSize: context.responsive.sp(12),
@@ -785,7 +785,7 @@ class _ReadingPrefsSelector extends StatelessWidget {
                 const Spacer(),
                 GestureDetector(
                   onTap: () {
-                    if (dailyMinutes > 5) onMinutesChanged(dailyMinutes - 5);
+                    if (pagesPerDay > 1) onPagesChanged(pagesPerDay - 1);
                   },
                   child: Container(
                     width: context.responsive.sp(28),
@@ -803,7 +803,7 @@ class _ReadingPrefsSelector extends StatelessWidget {
                 ),
                 SizedBox(width: context.responsive.wp(10)),
                 Text(
-                  '$dailyMinutes min',
+                  '$pagesPerDay pg',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: context.responsive.sp(13),
@@ -813,7 +813,7 @@ class _ReadingPrefsSelector extends StatelessWidget {
                 SizedBox(width: context.responsive.wp(10)),
                 GestureDetector(
                   onTap: () {
-                    if (dailyMinutes < 180) onMinutesChanged(dailyMinutes + 5);
+                    if (pagesPerDay < 100) onPagesChanged(pagesPerDay + 1);
                   },
                   child: Container(
                     width: context.responsive.sp(28),

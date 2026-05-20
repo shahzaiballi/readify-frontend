@@ -41,7 +41,7 @@ final insightsProvider = FutureProvider<InsightsEntity>((ref) async {
     // Return zeros so the UI always renders something meaningful
     return const InsightsEntity(
       cardsDue: 0,
-      readTodayMinutes: 0,
+      readTodayPages: 0,
       dayStreak: 0,
     );
   }

@@ -54,7 +54,7 @@ class ChapterListItem extends StatelessWidget {
                               children: [
                                  Icon(Icons.schedule, color: Colors.white54, size: context.responsive.sp(12)),
                                  SizedBox(width: context.responsive.wp(4)),
-                                 Text('${chapter.durationInMinutes} min  •  ${chapter.pageRange}', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(11))),
+                                 Text('${chapter.pagesCount > 0 ? chapter.pagesCount : chapter.pageRange.isNotEmpty ? chapter.pageRange : '—'} ${chapter.pagesCount > 0 ? 'pages' : ''}  •  ${chapter.pageRange}', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(11))),
                               ],
                            )
                         ],
@@ -68,7 +68,7 @@ class ChapterListItem extends StatelessWidget {
                  width: double.infinity,
                  child: ElevatedButton(
                     onPressed: () {
-                         context.push('/read/$bookId/${chapter.id}');
+                         context.push('/today-reading/$bookId');
                     },
                     style: ElevatedButton.styleFrom(
                        backgroundColor: Colors.transparent,
@@ -139,7 +139,7 @@ class ChapterListItem extends StatelessWidget {
          if (chapter.isLocked) {
              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This chapter is currently locked.')));
          } else {
-             context.push('/read/$bookId/${chapter.id}');
+             context.push('/today-reading/$bookId');
          }
        },
        borderRadius: BorderRadius.circular(context.responsive.sp(12)),
@@ -168,7 +168,7 @@ class ChapterListItem extends StatelessWidget {
                         children: [
                            Icon(Icons.schedule, color: Colors.white54, size: context.responsive.sp(12)),
                            SizedBox(width: context.responsive.wp(4)),
-                           Text('${chapter.durationInMinutes} min  •  ${chapter.pageRange}', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(11))),
+                           Text('${chapter.pagesCount > 0 ? '${chapter.pagesCount} pages' : chapter.pageRange.isNotEmpty ? chapter.pageRange : '—'}  •  ${chapter.pageRange}', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(11))),
                         ],
                      )
                   ],

@@ -24,7 +24,8 @@ class CompletedBooksWidget extends StatelessWidget {
               return Padding(
                 padding: EdgeInsets.only(right: context.responsive.sp(12)),
                 child: Container(
-                  width: context.responsive.sp(100),
+                  width: context.responsive.sp(120),
+                  height: context.responsive.sp(160),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(context.responsive.sp(12)),
                     border: Border.all(

@@ -26,12 +26,12 @@ class UserProgressEntity {
 
 class InsightsEntity {
   final int cardsDue;
-  final int readTodayMinutes;
+  final int readTodayPages;
   final int dayStreak;
 
   const InsightsEntity({
     required this.cardsDue,
-    required this.readTodayMinutes,
+    required this.readTodayPages,
     required this.dayStreak,
   });
 }

@@ -7,7 +7,7 @@ class BookDetailEntity extends BookEntity {
   final int daysLeftToFinish;
   final int pagesLeft;
   final int flashcardsCount;
-  final int readPerDayMinutes;
+  final int readPerDayPages;
 
   const BookDetailEntity({
     required super.id,
@@ -25,6 +25,6 @@ class BookDetailEntity extends BookEntity {
     required this.daysLeftToFinish,
     required this.pagesLeft,
     required this.flashcardsCount,
-    required this.readPerDayMinutes,
+    required this.readPerDayPages,
   });
 }

@@ -6,6 +6,7 @@ import '../entities/chapter_entity.dart';
 import '../entities/summary_entity.dart';
 import '../entities/chunk_entity.dart';
 import '../entities/flashcard_entity.dart';
+import '../entities/today_reading_entity.dart';
 
 abstract class BookRepository {
   Future<List<ChapterEntity>> getChapters(String bookId);
@@ -19,5 +20,9 @@ abstract class BookRepository {
   Future<List<BookEntity>> getRecommendedBooks();
   Future<List<BookEntity>> getTrendingBooks();
   Future<List<BookEntity>> getLibraryBooks();
+
+  Future<TodayReadingEntity> getTodayReading(String bookId);
+  Future<TodayCompleteResult> completeTodayReading(
+      String bookId, int durationSeconds);
 }
 

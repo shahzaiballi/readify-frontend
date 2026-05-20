@@ -30,6 +30,7 @@ import '../../presentation/profile/pages/reading_plan_page.dart';
 
 // Reading
 import '../../presentation/chunked_reading/pages/chunked_reading_screen.dart';
+import '../../presentation/today_reading/pages/today_reading_screen.dart';
 
 // Features
 import '../../presentation/search/pages/search_page.dart';
@@ -279,6 +280,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/reading_plan',
         name: 'reading_plan',
         builder: (_, __) => const ReadingPlanPage(),
+      ),
+      GoRoute(
+        path: '/today-reading/:bookId',
+        name: 'today_reading',
+        builder: (_, state) {
+          final bookId = state.pathParameters['bookId']!;
+          return TodayReadingScreen(bookId: bookId);
+        },
       ),
       GoRoute(
         path: '/read/:bookId/:chapterId',

@@ -143,25 +143,17 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
   }
 
   void _continueReading(BuildContext context) {
-    final chapterId = widget.progress.currentChapterId;
-    if (chapterId == null || chapterId.isEmpty) {
-      context.push('/chapters/${widget.progress.bookId}');
-      return;
-    }
-    context.push(
-      '/read/${widget.progress.bookId}/$chapterId',
-      extra: {'initialChunkIndex': widget.progress.currentChunkIndex},
-    );
+    context.push('/today-reading/${widget.progress.bookId}');
   }
 
   @override
   Widget build(BuildContext context) {
     final readingPlan = ref.watch(readingPlanProvider);
     final int estimatedDaysLeft =
-        ((100 - widget.progress.progressPercent) * 2 /
-                readingPlan.dailyMinutes)
+        ((100 - widget.progress.progressPercent) * 3 /
+                readingPlan.pagesPerDay.clamp(1, 1000))
             .ceil()
-            .clamp(1, 100);
+            .clamp(1, 365);
 
     return GestureDetector(
       onTapDown: (_) => _pressController.forward(),
@@ -399,10 +391,10 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
 
                     SizedBox(height: context.responsive.sp(20)),
 
-                    // Continue reading button
+                    // Today's reading button
                     _PremiumButton(
-                      label: 'Continue Reading',
-                      icon: Icons.play_arrow_rounded,
+                      label: "Start Today's Reading",
+                      icon: Icons.auto_stories_rounded,
                       onTap: () => _continueReading(context),
                     ),
 
@@ -413,10 +405,10 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                       children: [
                         Expanded(
                           child: _GhostButton(
-                            label: 'Flashcards',
-                            icon: Icons.style_outlined,
+                            label: 'Chapters',
+                            icon: Icons.list_alt_rounded,
                             onTap: () => context.push(
-                                '/flashcards/${widget.progress.bookId}'),
+                                '/chapters/${widget.progress.bookId}'),
                           ),
                         ),
                         SizedBox(width: context.responsive.wp(12)),
