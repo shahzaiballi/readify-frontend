@@ -117,9 +117,9 @@ class BookDetailHeader extends StatelessWidget {
         vertical: context.responsive.sp(5),
       ),
       decoration: BoxDecoration(
-        color: c.withOpacity(0.12),
+        color: c.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(context.responsive.sp(20)),
-        border: Border.all(color: c.withOpacity(0.3)),
+        border: Border.all(color: c.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

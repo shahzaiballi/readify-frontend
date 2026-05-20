@@ -15,22 +15,22 @@ class BookStatsRow extends StatelessWidget {
 
     return Row(
       children: [
-         Expanded(child: _StatBox(value: book.pagesLeft.toString(), label: 'Pages Left', context: context)),
+         Expanded(child: _statBox(value: book.pagesLeft.toString(), label: 'Pages Left', context: context)),
          SizedBox(width: context.responsive.wp(12)),
-         Expanded(child: _StatBox(value: book.flashcardsCount.toString(), label: 'Flashcards', context: context)),
+         Expanded(child: _statBox(value: book.flashcardsCount.toString(), label: 'Flashcards', context: context)),
          SizedBox(width: context.responsive.wp(12)),
-         Expanded(child: _StatBox(value: daysLabel, label: 'To Finish', context: context)),
+         Expanded(child: _statBox(value: daysLabel, label: 'To Finish', context: context)),
       ],
     );
   }
 
-  Widget _StatBox({required String value, required String label, required BuildContext context}) {
+  Widget _statBox({required String value, required String label, required BuildContext context}) {
      return Container(
        padding: EdgeInsets.symmetric(vertical: context.responsive.sp(16)),
        decoration: BoxDecoration(
           color: const Color(0xFF1E233D),
           borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
        ),
        child: Column(
          children: [

@@ -48,7 +48,7 @@ class _BuddyCard extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(context.responsive.sp(14)),
-          border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.2)),
+          border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.2)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +107,7 @@ class _BuddyCard extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: context.responsive.sp(6)),
               decoration: BoxDecoration(
-                color: const Color(0xFFB062FF).withOpacity(0.2),
+                color: const Color(0xFFB062FF).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(context.responsive.sp(8)),
               ),
               child: Text(

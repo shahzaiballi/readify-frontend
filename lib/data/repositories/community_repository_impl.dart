@@ -17,6 +17,7 @@ class CommunityRepositoryImpl {
       avatarUrl: d['avatarUrl'] ?? '',
       memberSince: d['memberSince'] ?? '',
       booksReading: d['booksReading'] ?? 0,
+      isAdmin: d['isAdmin'] ?? false,
     );
   }
 
@@ -247,5 +248,23 @@ class CommunityRepositoryImpl {
   Future<List<CommunityEntity>> getBuddySuggestions() async {
     final data = await _api.get('/api/v1/community/suggestions/buddy/') as List<dynamic>;
     return data.cast<Map<String, dynamic>>().map(_parseCommunity).toList();
+  }
+
+  Future<CommunityEntity> updateCommunity(
+    String id, {
+    String? name,
+    String? description,
+    String? coverEmoji,
+  }) async {
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (description != null) body['description'] = description;
+    if (coverEmoji != null) body['cover_emoji'] = coverEmoji;
+    final data = await _api.patch('/api/v1/community/$id/', body: body) as Map<String, dynamic>;
+    return _parseCommunity(data);
+  }
+
+  Future<void> deleteCommunity(String id) async {
+    await _api.delete('/api/v1/community/$id/');
   }
 }

@@ -87,7 +87,7 @@ class BookBriefPage extends ConsumerWidget {
               Expanded(child: Text(idea, style: const TextStyle(color: Colors.white70, fontSize: 15, height: 1.5))),
             ],
           ),
-        )).toList(),
+        )),
         
         const SizedBox(height: 24),
         _buildSection('The Verdict', brief.verdict, Icons.gavel_rounded),
@@ -101,7 +101,7 @@ class BookBriefPage extends ConsumerWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E233D),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -182,7 +182,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                     horizontal: 8),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFB062FF)
-                                      .withOpacity(0.15),
+                                      .withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
@@ -277,14 +277,14 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                           children: [
                                             Icon(Icons.auto_stories_outlined,
                                                 color: iconColor
-                                                    .withOpacity(0.4),
+                                                    .withValues(alpha: 0.4),
                                                 size: 48),
                                             const SizedBox(height: 16),
                                             Text(
                                               'No reading content available\nfor this chapter yet.',
                                               style: TextStyle(
                                                   color: textColor
-                                                      .withOpacity(0.6),
+                                                      .withValues(alpha: 0.6),
                                                   fontSize: 15,
                                                   height: 1.5),
                                               textAlign: TextAlign.center,
@@ -324,7 +324,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                               mini: true,
                               elevation: 0,
                               backgroundColor:
-                                  iconColor.withOpacity(0.1),
+                                  iconColor.withValues(alpha: 0.1),
                               onPressed: state.currentChunkIndex > 0
                                   ? controller.backChunk
                                   : null,
@@ -332,7 +332,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                                 Icons.arrow_back_ios_new,
                                 color: state.currentChunkIndex > 0
                                     ? iconColor
-                                    : iconColor.withOpacity(0.2),
+                                    : iconColor.withValues(alpha: 0.2),
                                 size: 16,
                               ),
                             ),
@@ -342,16 +342,16 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
                               decoration: BoxDecoration(
-                                color: iconColor.withOpacity(0.08),
+                                color: iconColor.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: iconColor.withOpacity(0.15),
+                                  color: iconColor.withValues(alpha: 0.15),
                                 ),
                               ),
                               child: Text(
                                 '${state.currentChunkIndex + 1} / ${state.chunks.length}',
                                 style: TextStyle(
-                                  color: iconColor.withOpacity(0.7),
+                                  color: iconColor.withValues(alpha: 0.7),
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -368,7 +368,7 @@ class _ChunkedReadingScreenState extends ConsumerState<ChunkedReadingScreen> {
                               mini: true,
                               elevation: 0,
                               backgroundColor:
-                                  const Color(0xFFB062FF).withOpacity(0.9),
+                                  const Color(0xFFB062FF).withValues(alpha: 0.9),
                               onPressed: () => controller.nextChunk(),
                               child: Icon(
                                 // Show checkmark only on the very last page

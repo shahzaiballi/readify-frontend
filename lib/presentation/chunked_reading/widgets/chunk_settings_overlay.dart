@@ -115,7 +115,7 @@ class ChunkSettingsOverlay extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFB062FF) : Colors.white.withOpacity(0.05),
+                color: isSelected ? const Color(0xFFB062FF) : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected ? const Color(0xFFB062FF) : Colors.white12,

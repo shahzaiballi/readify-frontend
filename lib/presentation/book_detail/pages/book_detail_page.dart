@@ -68,7 +68,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
       // ENHANCED UI: Transparent app bar that fades in on scroll
       appBar: AppBar(
         backgroundColor:
-            const Color(0xFF0F1626).withOpacity(_headerOpacity),
+            const Color(0xFF0F1626).withValues(alpha: _headerOpacity),
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(context.responsive.sp(8)),
@@ -76,10 +76,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             onTap: () => context.pop(),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
-                    color: Colors.white.withOpacity(0.1), width: 1),
+                    color: Colors.white.withValues(alpha: 0.1), width: 1),
               ),
               child: Icon(Icons.arrow_back_ios_new_rounded,
                   color: Colors.white, size: context.responsive.sp(16)),
@@ -232,8 +232,8 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            const Color(0xFF0F1626).withOpacity(0),
-            const Color(0xFF0F1626).withOpacity(0.95),
+            const Color(0xFF0F1626).withValues(alpha: 0),
+            const Color(0xFF0F1626).withValues(alpha: 0.95),
             const Color(0xFF0F1626),
           ],
           stops: const [0, 0.3, 1],
@@ -258,7 +258,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
           decoration: BoxDecoration(
             color: const Color(0xFF1E233D),
             borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Text(
             book.description as String,
@@ -279,7 +279,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     return Row(
       children: [
         Expanded(
-          child: _DiscoveryStat(
+          child: _discoveryStat(
             value: '${book.pagesLeft}',
             label: 'Total Pages',
             context: context,
@@ -287,7 +287,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
         ),
         SizedBox(width: context.responsive.wp(12)),
         Expanded(
-          child: _DiscoveryStat(
+          child: _discoveryStat(
             value: '${book.totalChapters}',
             label: 'Chapters',
             context: context,
@@ -295,7 +295,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
         ),
         SizedBox(width: context.responsive.wp(12)),
         Expanded(
-          child: _DiscoveryStat(
+          child: _discoveryStat(
             value: (book.rating as double).toStringAsFixed(1),
             label: 'Rating',
             context: context,
@@ -306,7 +306,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     );
   }
 
-  Widget _DiscoveryStat({
+  Widget _discoveryStat({
     required String value,
     required String label,
     required BuildContext context,
@@ -317,7 +317,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
       decoration: BoxDecoration(
         color: const Color(0xFF1E233D),
         borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -386,11 +386,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             Container(
               padding: EdgeInsets.all(context.responsive.sp(24)),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withOpacity(0.08),
+                color: Colors.redAccent.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.wifi_off_rounded,
-                  color: Colors.redAccent.withOpacity(0.7),
+                  color: Colors.redAccent.withValues(alpha: 0.7),
                   size: context.responsive.sp(40)),
             ),
             SizedBox(height: context.responsive.sp(20)),

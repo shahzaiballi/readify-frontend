@@ -24,5 +24,6 @@ abstract class BookRepository {
   Future<TodayReadingEntity> getTodayReading(String bookId);
   Future<TodayCompleteResult> completeTodayReading(
       String bookId, int durationSeconds);
+  Future<TodaySummaryResult> getTodaySummary(String bookId);
 }
 

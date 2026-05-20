@@ -31,14 +31,14 @@ class ProgressChartWidget extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFFB062FF).withOpacity(0.15),
-                  const Color(0xFFB062FF).withOpacity(0.05),
+                  const Color(0xFFB062FF).withValues(alpha: 0.15),
+                  const Color(0xFFB062FF).withValues(alpha: 0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               border: Border.all(
-                color: const Color(0xFFB062FF).withOpacity(0.3),
+                color: const Color(0xFFB062FF).withValues(alpha: 0.3),
                 width: 1.5,
               ),
               borderRadius: BorderRadius.circular(context.responsive.sp(16)),

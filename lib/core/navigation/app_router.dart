@@ -35,8 +35,6 @@ import '../../presentation/today_reading/pages/today_reading_screen.dart';
 // Features
 import '../../presentation/search/pages/search_page.dart';
 import '../../presentation/flashcards/pages/flashcard_page.dart';
-import '../../presentation/progress/pages/progress_page.dart';
-
 // ✅ NEW COMMUNITY IMPORTS (you must have these)
 import '../../presentation/community/pages/community_page.dart';
 import '../../presentation/community/pages/community_detail_page.dart';
@@ -58,7 +56,7 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 // Refresh listener for auth changes
 class AuthRefreshListenable extends ChangeNotifier {
   AuthRefreshListenable(Ref ref) {
-    ref.listen(authControllerProvider, (_, __) => notifyListeners());
+    ref.listen(authControllerProvider, (_, _) => notifyListeners());
   }
 }
 
@@ -124,56 +122,56 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/setup_profile',
         name: 'setup_profile',
-        builder: (_, __) => const SetupProfilePage(),
+        builder: (_, _) => const SetupProfilePage(),
       ),
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
-        builder: (_, __) => const OnboardingPage(),
+        builder: (_, _) => const OnboardingPage(),
       ),
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (_, __) => const LoginPage(),
+        builder: (_, _) => const LoginPage(),
       ),
       GoRoute(
         path: '/signup',
         name: 'signup',
-        builder: (_, __) => const SignUpPage(),
+        builder: (_, _) => const SignUpPage(),
       ),
       GoRoute(
         path: '/forgot_password',
         name: 'forgot_password',
-        builder: (_, __) => const ForgotPasswordPage(),
+        builder: (_, _) => const ForgotPasswordPage(),
       ),
       GoRoute(
         path: '/verify_otp',
         name: 'verify_otp',
-        builder: (_, __) => const OtpVerificationPage(),
+        builder: (_, _) => const OtpVerificationPage(),
       ),
 
       // Home
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (_, __) => const HomePage(),
+        builder: (_, _) => const HomePage(),
       ),
 
       // Profile
       GoRoute(
         path: '/profile',
         name: 'profile',
-        builder: (_, __) => const ProfilePage(),
+        builder: (_, _) => const ProfilePage(),
       ),
       GoRoute(
         path: '/profile/edit',
         name: 'edit_profile',
-        builder: (_, __) => const EditProfilePage(),
+        builder: (_, _) => const EditProfilePage(),
       ),
       GoRoute(
         path: '/profile/change_password',
         name: 'change_password',
-        builder: (_, __) => const ChangePasswordPage(),
+        builder: (_, _) => const ChangePasswordPage(),
       ),
 
       // Books
@@ -214,7 +212,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/community',
         name: 'community',
-        builder: (_, __) => const CommunityPage(),
+        builder: (_, _) => const CommunityPage(),
       ),
       GoRoute(
         path: '/community/:id',
@@ -279,7 +277,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/reading_plan',
         name: 'reading_plan',
-        builder: (_, __) => const ReadingPlanPage(),
+        builder: (_, _) => const ReadingPlanPage(),
       ),
       GoRoute(
         path: '/today-reading/:bookId',
@@ -315,7 +313,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/search',
         name: 'search',
-        builder: (_, __) => const SearchPage(),
+        builder: (_, _) => const SearchPage(),
       ),
       GoRoute(
         path: '/flashcards/:id',

@@ -47,7 +47,7 @@ class SummaryHeaderCard extends StatelessWidget {
      return Container(
         padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(16), vertical: context.responsive.sp(12)),
         decoration: BoxDecoration(
-           color: const Color(0xFF0F1626).withOpacity(0.5),
+           color: const Color(0xFF0F1626).withValues(alpha: 0.5),
            borderRadius: BorderRadius.circular(context.responsive.sp(12)),
         ),
         child: Column(

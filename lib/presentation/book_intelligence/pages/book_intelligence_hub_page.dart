@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/utils/responsive_utils.dart';
 import '../providers/intelligence_providers.dart';
 
 class BookIntelligenceHubPage extends ConsumerWidget {
@@ -47,7 +46,7 @@ class BookIntelligenceHubPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.auto_awesome_rounded, size: 64, color: Colors.amber.withOpacity(0.8)),
+            Icon(Icons.auto_awesome_rounded, size: 64, color: Colors.amber.withValues(alpha: 0.8)),
             const SizedBox(height: 24),
             const Text(
               'Unlock Book Intelligence',
@@ -165,14 +164,14 @@ class BookIntelligenceHubPage extends ConsumerWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E233D),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 28),
@@ -194,14 +193,14 @@ class BookIntelligenceHubPage extends ConsumerWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 13,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.3), size: 16),
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withValues(alpha: 0.3), size: 16),
           ],
         ),
       ),

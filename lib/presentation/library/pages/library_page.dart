@@ -4,7 +4,6 @@ import '../../../core/utils/responsive_utils.dart';
 import '../controllers/library_controller.dart';
 import '../widgets/library_segmented_control.dart';
 import '../widgets/library_book_card.dart';
-import 'add_book_page.dart';
 
 class LibraryPage extends ConsumerWidget {
   const LibraryPage({super.key});

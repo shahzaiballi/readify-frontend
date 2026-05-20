@@ -313,4 +313,42 @@ class BookRepositoryImpl implements BookRepository {
       isBookComplete: _toBool(data['isBookComplete']),
     );
   }
+
+  @override
+  Future<TodaySummaryResult> getTodaySummary(String bookId) async {
+    final data = await _api.get(
+      '/api/v1/books/$bookId/today/summary/',
+    ) as Map<String, dynamic>;
+
+    final status = data['status'] as String? ?? 'generating';
+
+    if (status == 'generating') {
+      return const TodaySummaryResult(
+        status: 'generating',
+        readingMode: '',
+        summaries: [],
+      );
+    }
+
+    final rawSummaries = data['summaries'] as List<dynamic>? ?? [];
+    final summaries = rawSummaries.map((s) {
+      final raw = s as Map<String, dynamic>;
+      final takeaways = (raw['keyTakeaways'] as List<dynamic>? ?? [])
+          .map((t) => t.toString())
+          .toList();
+      return TodaySummaryItem(
+        chapterNumber: _toInt(raw['chapterNumber']),
+        chapterTitle: raw['chapterTitle']?.toString() ?? '',
+        mode: raw['mode']?.toString() ?? '',
+        summaryContent: raw['summaryContent']?.toString() ?? '',
+        keyTakeaways: takeaways,
+      );
+    }).toList();
+
+    return TodaySummaryResult(
+      status: status,
+      readingMode: data['readingMode']?.toString() ?? '',
+      summaries: summaries,
+    );
+  }
 }

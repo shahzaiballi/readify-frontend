@@ -86,13 +86,13 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
         color: const Color(0xFF0D1124),
         border: Border(
           top: BorderSide(
-            color: Colors.white.withOpacity(0.07),
+            color: Colors.white.withValues(alpha: 0.07),
             width: 1,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 24,
             offset: const Offset(0, -8),
           ),
@@ -145,11 +145,12 @@ class _NavBarItem extends StatelessWidget {
           scale: scaleAnimation.value,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Special Upload Button - Larger and More Prominent
               Container(
-                width: context.responsive.sp(50),
-                height: context.responsive.sp(50),
+                width: context.responsive.sp(42),
+                height: context.responsive.sp(42),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -162,7 +163,7 @@ class _NavBarItem extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFB062FF).withOpacity(0.4),
+                      color: const Color(0xFFB062FF).withValues(alpha: 0.4),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -171,7 +172,7 @@ class _NavBarItem extends StatelessWidget {
                 child: Icon(
                   item.icon,
                   color: Colors.white,
-                  size: context.responsive.sp(28),
+                  size: context.responsive.sp(22),
                 ),
               ),
               SizedBox(height: context.responsive.sp(4)),
@@ -210,7 +211,7 @@ class _NavBarItem extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFFB062FF).withOpacity(0.18)
+                    ? const Color(0xFFB062FF).withValues(alpha: 0.18)
                     : Colors.transparent,
                 borderRadius:
                     BorderRadius.circular(context.responsive.sp(14)),
@@ -222,13 +223,13 @@ class _NavBarItem extends StatelessWidget {
                   key: ValueKey(isSelected),
                   color: isSelected
                       ? const Color(0xFFB062FF)
-                      : Colors.white.withOpacity(0.35),
+                      : Colors.white.withValues(alpha: 0.35),
                   size: context.responsive.sp(22),
                   shadows: isSelected
                       ? [
                           Shadow(
                             color:
-                                const Color(0xFFB062FF).withOpacity(0.6),
+                                const Color(0xFFB062FF).withValues(alpha: 0.6),
                             blurRadius: 12,
                           ),
                         ]
@@ -245,7 +246,7 @@ class _NavBarItem extends StatelessWidget {
               style: TextStyle(
                 color: isSelected
                     ? const Color(0xFFB062FF)
-                    : Colors.white.withOpacity(0.35),
+                    : Colors.white.withValues(alpha: 0.35),
                 fontSize: context.responsive.sp(10),
                 fontWeight:
                     isSelected ? FontWeight.bold : FontWeight.normal,

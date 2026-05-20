@@ -18,7 +18,6 @@ import '../widgets/custom_bottom_nav_bar.dart';
 import '../../library/pages/library_page.dart';
 import '../../library/pages/add_book_page.dart';
 import '../../community/pages/community_page.dart';
-import '../../profile/pages/profile_page.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../progress/pages/progress_page.dart';
 
@@ -120,7 +119,6 @@ class _HomePageState extends ConsumerState<HomePage>
     final insights = ref.watch(insightsProvider);
     final recommended = ref.watch(recommendedBooksProvider);
     final trending = ref.watch(trendingBooksProvider);
-    final library = ref.watch(libraryBooksProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B1020),
@@ -142,7 +140,11 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
 
           SafeArea(
-            child: CustomScrollView(
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: const Color(0xFFB062FF),
+              backgroundColor: const Color(0xFF141B34),
+              child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
                 // 🔥 GLASS HEADER
@@ -216,9 +218,19 @@ class _HomePageState extends ConsumerState<HomePage>
               ],
             ),
           ),
+            ),
         ],
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+    ref.invalidate(currentProgressProvider);
+    ref.invalidate(insightsProvider);
+    ref.invalidate(recommendedBooksProvider);
+    ref.invalidate(trendingBooksProvider);
+    ref.invalidate(libraryBooksProvider);
+    ref.invalidate(profileControllerProvider);
   }
 
   // ================= UI COMPONENTS =================
@@ -236,9 +248,9 @@ class _HomePageState extends ConsumerState<HomePage>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -254,7 +266,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFFB062FF).withOpacity(0.5),
+                        color: const Color(0xFFB062FF).withValues(alpha: 0.5),
                         width: 2,
                       ),
                     ),
@@ -358,8 +370,25 @@ class _HomePageState extends ConsumerState<HomePage>
         padding: EdgeInsets.all(24),
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) =>
-          const Center(child: Text("Error", style: TextStyle(color: Colors.white))),
+      error: (_, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Color(0xFFB062FF), size: 18),
+            const SizedBox(width: 8),
+            const Text('Failed to load', style: TextStyle(color: Colors.white70)),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: _refresh,
+              child: const Text(
+                'Retry',
+                style: TextStyle(color: Color(0xFFB062FF), fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -368,7 +397,7 @@ class _HomePageState extends ConsumerState<HomePage>
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
       ),
       child: const Text(
@@ -385,10 +414,26 @@ class _HomePageState extends ConsumerState<HomePage>
         ),
       );
 
-  Widget _errorSliver() => const SliverToBoxAdapter(
-        child: Center(
-            child: Text("Error loading data",
-                style: TextStyle(color: Colors.white))),
+  Widget _errorSliver() => SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Color(0xFFB062FF), size: 18),
+              const SizedBox(width: 8),
+              const Text('Failed to load', style: TextStyle(color: Colors.white70)),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: _refresh,
+                child: const Text(
+                  'Retry',
+                  style: TextStyle(color: Color(0xFFB062FF), fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 
   Widget _gap() => const SliverToBoxAdapter(

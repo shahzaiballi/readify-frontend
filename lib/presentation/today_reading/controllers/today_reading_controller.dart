@@ -13,7 +13,6 @@ class TodayReadingState {
   final int elapsedSeconds;
   final bool isComplete;
   final TodayCompleteResult? completeResult;
-  final double fontSize;
 
   const TodayReadingState({
     required this.reading,
@@ -21,7 +20,6 @@ class TodayReadingState {
     this.elapsedSeconds = 0,
     this.isComplete = false,
     this.completeResult,
-    this.fontSize = 18.0,
   });
 
   List<TodayChunkEntity> get chunks => reading.allChunks;
@@ -41,7 +39,6 @@ class TodayReadingState {
     int? elapsedSeconds,
     bool? isComplete,
     TodayCompleteResult? completeResult,
-    double? fontSize,
   }) {
     return TodayReadingState(
       reading: reading ?? this.reading,
@@ -49,7 +46,6 @@ class TodayReadingState {
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       isComplete: isComplete ?? this.isComplete,
       completeResult: completeResult ?? this.completeResult,
-      fontSize: fontSize ?? this.fontSize,
     );
   }
 }
@@ -137,11 +133,6 @@ class TodayReadingController
     ref.triggerProgressRefresh();
   }
 
-  void updateFontSize(double size) {
-    if (state.hasValue) {
-      state = AsyncData(state.value!.copyWith(fontSize: size));
-    }
-  }
 }
 
 final todayReadingControllerProvider = AsyncNotifierProvider.autoDispose

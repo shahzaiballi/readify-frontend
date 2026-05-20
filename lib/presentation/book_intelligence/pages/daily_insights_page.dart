@@ -95,10 +95,10 @@ class DailyInsightsPage extends ConsumerWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E233D),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.05),
+            color: color.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -116,7 +116,7 @@ class DailyInsightsPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text(time, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                    Text(time, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
                   ],
                 ),
               ),

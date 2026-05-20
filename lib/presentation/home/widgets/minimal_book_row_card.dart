@@ -63,13 +63,13 @@ class _MinimalBookRowCardState extends State<MinimalBookRowCard>
             borderRadius:
                 BorderRadius.circular(context.responsive.sp(18)),
             border: Border.all(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.withValues(alpha: 0.06),
               width: 1,
             ),
             // ENHANCED UI: Subtle shadow for depth
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
+                color: Colors.black.withValues(alpha: 0.25),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -142,7 +142,7 @@ class _MinimalBookRowCardState extends State<MinimalBookRowCard>
                     Text(
                       widget.book.author,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: context.responsive.sp(12),
                       ),
                       maxLines: 1,
@@ -160,7 +160,7 @@ class _MinimalBookRowCardState extends State<MinimalBookRowCard>
                             vertical: context.responsive.sp(3),
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.amber.withOpacity(0.12),
+                            color: Colors.amber.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(
                                 context.responsive.sp(6)),
                           ),
@@ -212,11 +212,11 @@ class _MinimalBookRowCardState extends State<MinimalBookRowCard>
                         vertical: context.responsive.sp(3),
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFB062FF).withOpacity(0.12),
+                        color: const Color(0xFFB062FF).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(
                             context.responsive.sp(20)),
                         border: Border.all(
-                          color: const Color(0xFFB062FF).withOpacity(0.2),
+                          color: const Color(0xFFB062FF).withValues(alpha: 0.2),
                         ),
                       ),
                       child: Text(
@@ -239,7 +239,7 @@ class _MinimalBookRowCardState extends State<MinimalBookRowCard>
                     EdgeInsets.only(left: context.responsive.wp(8)),
                 child: Icon(
                   Icons.chevron_right_rounded,
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   size: context.responsive.sp(20),
                 ),
               ),

@@ -271,7 +271,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFB062FF).withOpacity(0.4),
+                    color: const Color(0xFFB062FF).withValues(alpha: 0.4),
                     blurRadius: 8,
                   ),
                 ],
@@ -435,7 +435,7 @@ class _SourceOption extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(context.responsive.sp(10)),
               decoration: BoxDecoration(
-                color: const Color(0xFFB062FF).withOpacity(0.15),
+                color: const Color(0xFFB062FF).withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon,

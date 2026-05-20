@@ -18,95 +18,80 @@ class CommunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () => context.push('/community/${community.id}'),
-      child: Container(
-        margin: EdgeInsets.only(bottom: context.responsive.sp(12)),
-        padding: EdgeInsets.all(context.responsive.sp(16)),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A223B),
-          borderRadius: BorderRadius.circular(context.responsive.sp(16)),
-          border: Border.all(color: Colors.white.withOpacity(0.07)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
+      borderRadius: BorderRadius.circular(context.responsive.sp(16)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.responsive.wp(4),
+          vertical: context.responsive.sp(10),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Avatar
-            _buildAvatar(context),
+            _CommunityAvatar(community: community),
             SizedBox(width: context.responsive.wp(14)),
-
-            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Name row
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          community.name,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: context.responsive.sp(14),
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                community.name,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: context.responsive.sp(15),
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: -0.1,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (community.privacy == 'private') ...[
+                              SizedBox(width: context.responsive.wp(4)),
+                              Icon(Icons.lock_rounded,
+                                  color: Colors.white38,
+                                  size: context.responsive.sp(12)),
+                            ],
+                            if (community.isAdmin) ...[
+                              SizedBox(width: context.responsive.wp(4)),
+                              Icon(Icons.shield_rounded,
+                                  color: const Color(0xFFFFD700),
+                                  size: context.responsive.sp(12)),
+                            ],
+                          ],
                         ),
                       ),
-                      if (community.privacy == 'private')
-                        Padding(
-                          padding: EdgeInsets.only(left: context.responsive.wp(6)),
-                          child: Icon(
-                            Icons.lock_outline,
+                      if (community.lastMessage != null)
+                        Text(
+                          community.lastMessage!.timeLabel,
+                          style: TextStyle(
                             color: Colors.white38,
-                            size: context.responsive.sp(13),
+                            fontSize: context.responsive.sp(11),
                           ),
                         ),
                     ],
                   ),
-                  if (community.bookTitle != null) ...[
-                    SizedBox(height: context.responsive.sp(2)),
-                    Text(
-                      community.bookTitle!,
-                      style: TextStyle(
-                        color: const Color(0xFFB062FF),
-                        fontSize: context.responsive.sp(11),
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  SizedBox(height: context.responsive.sp(6)),
-                  _buildLastMessage(context),
+                  SizedBox(height: context.responsive.sp(3)),
+                  // Subtitle row
+                  Row(
+                    children: [
+                      Expanded(child: _buildPreview(context)),
+                      if (!community.isMember)
+                        _JoinBadge(),
+                      if (community.isMember)
+                        _MemberDot(hasActivity: community.lastMessage != null),
+                    ],
+                  ),
                 ],
               ),
-            ),
-
-            SizedBox(width: context.responsive.wp(8)),
-
-            // Right side
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (community.lastMessage != null)
-                  Text(
-                    community.lastMessage!.timeLabel,
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: context.responsive.sp(10),
-                    ),
-                  ),
-                SizedBox(height: context.responsive.sp(6)),
-                _MemberCountBadge(count: community.memberCount),
-              ],
             ),
           ],
         ),
@@ -114,61 +99,38 @@ class CommunityCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(BuildContext context) {
-    final size = context.responsive.sp(48);
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF381A5D), Color(0xFF1A2340)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: community.coverImageUrl != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-              child: Image.network(
-                community.coverImageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _emojiPlaceholder(context, size),
+  Widget _buildPreview(BuildContext context) {
+    if (community.bookTitle != null) {
+      return Row(
+        children: [
+          Icon(Icons.menu_book_rounded,
+              color: const Color(0xFFB062FF), size: context.responsive.sp(11)),
+          SizedBox(width: context.responsive.wp(3)),
+          Flexible(
+            child: Text(
+              community.bookTitle!,
+              style: TextStyle(
+                color: const Color(0xFFB062FF),
+                fontSize: context.responsive.sp(12),
               ),
-            )
-          : _emojiPlaceholder(context, size),
-    );
-  }
-
-  Widget _emojiPlaceholder(BuildContext context, double size) {
-    return Center(
-      child: Text(
-        community.coverEmoji,
-        style: TextStyle(fontSize: size * 0.45),
-      ),
-    );
-  }
-
-  Widget _buildLastMessage(BuildContext context) {
-    if (community.lastMessage == null) {
-      return Text(
-        community.description.isNotEmpty
-            ? community.description
-            : 'No messages yet',
-        style: TextStyle(
-          color: Colors.white38,
-          fontSize: context.responsive.sp(12),
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       );
     }
-    final msg = community.lastMessage!;
+    final preview = community.lastMessage != null
+        ? '${community.lastMessage!.senderName}: ${community.lastMessage!.content}'
+        : community.description.isNotEmpty
+            ? community.description
+            : 'Tap to view';
     return Text(
-      '${msg.senderName}: ${msg.content}',
+      preview,
       style: TextStyle(
-        color: Colors.white54,
+        color: Colors.white38,
         fontSize: context.responsive.sp(12),
+        height: 1.3,
       ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -176,44 +138,93 @@ class CommunityCard extends StatelessWidget {
   }
 }
 
-class _MemberCountBadge extends StatelessWidget {
-  final int count;
-  const _MemberCountBadge({required this.count});
+// ── Circle avatar with emoji or image ─────────────────────────────────────────
+
+class _CommunityAvatar extends StatelessWidget {
+  final CommunityEntity community;
+  const _CommunityAvatar({required this.community});
 
   @override
   Widget build(BuildContext context) {
-    final label = count >= 1000
-        ? '${(count / 1000).toStringAsFixed(1)}K'
-        : '$count';
+    final size = context.responsive.sp(54);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2D1B52), Color(0xFF1A2340)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1.5,
+        ),
+      ),
+      child: community.coverImageUrl != null
+          ? ClipOval(
+              child: Image.network(
+                community.coverImageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _emoji(context, size),
+              ),
+            )
+          : _emoji(context, size),
+    );
+  }
+
+  Widget _emoji(BuildContext context, double size) {
+    return Center(
+      child: Text(
+        community.coverEmoji,
+        style: TextStyle(fontSize: size * 0.44),
+      ),
+    );
+  }
+}
+
+// ── Join badge for undiscovered communities ────────────────────────────────────
+
+class _JoinBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: context.responsive.wp(7),
+        horizontal: context.responsive.wp(8),
         vertical: context.responsive.sp(3),
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFB062FF).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(context.responsive.sp(8)),
-        border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.25)),
+        color: const Color(0xFFB062FF).withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(context.responsive.sp(20)),
+        border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.4)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.people_outline,
-            color: const Color(0xFFB062FF),
-            size: context.responsive.sp(10),
-          ),
-          SizedBox(width: context.responsive.wp(3)),
-          Text(
-            label,
-            style: TextStyle(
-              color: const Color(0xFFB062FF),
-              fontSize: context.responsive.sp(10),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+      child: Text(
+        'Join',
+        style: TextStyle(
+          color: const Color(0xFFB062FF),
+          fontSize: context.responsive.sp(11),
+          fontWeight: FontWeight.bold,
+        ),
       ),
+    );
+  }
+}
+
+// ── Active dot for joined communities ─────────────────────────────────────────
+
+class _MemberDot extends StatelessWidget {
+  final bool hasActivity;
+  const _MemberDot({required this.hasActivity});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.people_outline_rounded,
+            color: Colors.white24, size: context.responsive.sp(12)),
+      ],
     );
   }
 }

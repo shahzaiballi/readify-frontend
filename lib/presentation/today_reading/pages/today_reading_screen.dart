@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/entities/today_reading_entity.dart';
 import '../controllers/today_reading_controller.dart';
 import '../widgets/day_complete_card.dart';
+import '../widgets/today_summary_sheet.dart';
 
 class TodayReadingScreen extends ConsumerStatefulWidget {
   final String bookId;
@@ -16,7 +17,6 @@ class TodayReadingScreen extends ConsumerStatefulWidget {
 
 class _TodayReadingScreenState extends ConsumerState<TodayReadingScreen> {
   static const _bg = Color(0xFF0A0F1E);
-  static const _surface = Color(0xFF131929);
   static const _accent = Color(0xFFB062FF);
   static const _textPrimary = Color(0xFFF1F1F3);
   static const _textSecondary = Color(0xFF8A8FA8);
@@ -126,9 +126,23 @@ class _TodayReadingScreenState extends ConsumerState<TodayReadingScreen> {
               isLast: isLast,
               onPrevious: () => controller.previousPage(),
               onNext: () => controller.nextPage(),
+              onSummary:
+                  isLast ? () => _showSummarySheet(context) : null,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showSummarySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => TodaySummarySheet(
+        bookId: widget.bookId,
+        onSkimComplete: () => Navigator.of(context, rootNavigator: true).pop(),
       ),
     );
   }
@@ -340,7 +354,7 @@ class _PagePill extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _TodayReadingScreenState._accent.withOpacity(0.12),
+              color: _TodayReadingScreenState._accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -410,7 +424,7 @@ class _EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
                 decoration: BoxDecoration(
-                color: _TodayReadingScreenState._accent.withOpacity(0.1),
+                color: _TodayReadingScreenState._accent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.auto_stories_rounded,
@@ -463,6 +477,7 @@ class _BottomNav extends StatelessWidget {
   final bool isLast;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
+  final VoidCallback? onSummary;
 
   const _BottomNav({
     required this.currentIndex,
@@ -470,6 +485,7 @@ class _BottomNav extends StatelessWidget {
     required this.isLast,
     required this.onPrevious,
     required this.onNext,
+    this.onSummary,
   });
 
   @override
@@ -482,8 +498,42 @@ class _BottomNav extends StatelessWidget {
         color: _TodayReadingScreenState._bg,
         border: Border(top: BorderSide(color: Color(0xFF1E2640), width: 1)),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          if (isLast && onSummary != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: GestureDetector(
+                onTap: onSummary,
+                child: Container(
+                  width: double.infinity,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E2640),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF9146FF)),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('⚡', style: TextStyle(fontSize: 16)),
+                      SizedBox(width: 6),
+                      Text(
+                        'AI Summary',
+                        style: TextStyle(
+                          color: Color(0xFFB062FF),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          Row(
+            children: [
           // Previous button
           Expanded(
             child: GestureDetector(
@@ -496,7 +546,7 @@ class _BottomNav extends StatelessWidget {
                       : const Color(0xFF131929),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: hasPrev ? Colors.white12 : Colors.white.withOpacity(0.05),
+                    color: hasPrev ? Colors.white12 : Colors.white.withValues(alpha: 0.05),
                   ),
                 ),
                 child: Row(
@@ -508,7 +558,7 @@ class _BottomNav extends StatelessWidget {
                         color: hasPrev
                           ? _TodayReadingScreenState._textPrimary
                           : _TodayReadingScreenState._textSecondary
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -519,7 +569,7 @@ class _BottomNav extends StatelessWidget {
                         color: hasPrev
                             ? _TodayReadingScreenState._textPrimary
                             : _TodayReadingScreenState._textSecondary
-                                .withOpacity(0.3),
+                                .withValues(alpha: 0.3),
                       ),
                     ),
                   ],
@@ -551,7 +601,7 @@ class _BottomNav extends StatelessWidget {
                       color: (isLast
                               ? const Color(0xFF3CCF7E)
                               : const Color(0xFFB062FF))
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -580,6 +630,8 @@ class _BottomNav extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+            ],
           ),
         ],
       ),
@@ -659,7 +711,7 @@ class _ErrorView extends StatelessWidget {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: Colors.redAccent.withOpacity(0.1),
+                      color: Colors.redAccent.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.error_outline_rounded,

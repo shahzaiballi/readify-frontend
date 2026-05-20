@@ -169,15 +169,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                       Row(
                         children: [
-                           Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+                           Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
                            Padding(
                              padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(16)),
                              child: Text(
                                'or continue with',
-                               style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: context.responsive.sp(13)),
+                               style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: context.responsive.sp(13)),
                              ),
                            ),
-                           Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+                           Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
                         ],
                       ),
                       SizedBox(height: context.responsive.sp(32)),

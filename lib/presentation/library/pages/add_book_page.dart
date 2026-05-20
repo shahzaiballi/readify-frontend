@@ -1,5 +1,4 @@
-﻿import 'dart:typed_data';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../auth/widgets/custom_text_field.dart';
@@ -486,7 +485,7 @@ class _ConfirmChaptersViewState
 
   @override
   void dispose() {
-    for (final c in _titleControllers) c.dispose();
+    for (final c in _titleControllers) { c.dispose(); }
     super.dispose();
   }
 

@@ -144,7 +144,7 @@ class _UploadPictureStep extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color(0xFF1E233D),
-              border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.3), width: 2),
+              border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.3), width: 2),
             ),
             child: Icon(
               Icons.camera_alt_outlined,
@@ -230,7 +230,7 @@ class _PlanOption extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(context.responsive.sp(20)),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFB062FF).withOpacity(0.15) : const Color(0xFF1E233D),
+        color: isSelected ? const Color(0xFFB062FF).withValues(alpha: 0.15) : const Color(0xFF1E233D),
         borderRadius: BorderRadius.circular(context.responsive.sp(16)),
         border: Border.all(
           color: isSelected ? const Color(0xFFB062FF) : Colors.transparent,

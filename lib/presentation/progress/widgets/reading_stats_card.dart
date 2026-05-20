@@ -24,14 +24,14 @@ class ReadingStatsCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            backgroundColor.withOpacity(0.2),
-            backgroundColor.withOpacity(0.05),
+            backgroundColor.withValues(alpha: 0.2),
+            backgroundColor.withValues(alpha: 0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: backgroundColor.withOpacity(0.3),
+          color: backgroundColor.withValues(alpha: 0.3),
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(context.responsive.sp(16)),
@@ -42,7 +42,7 @@ class ReadingStatsCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(context.responsive.sp(8)),
             decoration: BoxDecoration(
-              color: backgroundColor.withOpacity(0.2),
+              color: backgroundColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(context.responsive.sp(8)),
             ),
             child: Icon(

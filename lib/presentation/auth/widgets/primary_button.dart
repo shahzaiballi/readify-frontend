@@ -86,13 +86,13 @@ class _PrimaryButtonState extends State<PrimaryButton>
                   : [
                       BoxShadow(
                         color: const Color(0xFF7B2FFF)
-                            .withOpacity(0.4 * _glow.value),
+                            .withValues(alpha: 0.4 * _glow.value),
                         blurRadius: 20,
                         offset: const Offset(0, 6),
                       ),
                       BoxShadow(
                         color: const Color(0xFF3277FF)
-                            .withOpacity(0.2 * _glow.value),
+                            .withValues(alpha: 0.2 * _glow.value),
                         blurRadius: 30,
                         offset: const Offset(0, 10),
                       ),
@@ -104,7 +104,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
-              splashColor: Colors.white.withOpacity(0.1),
+              splashColor: Colors.white.withValues(alpha: 0.1),
               onTap: null, // handled by GestureDetector
               child: Center(
                 child: widget.isLoading
@@ -117,7 +117,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation(
-                                  Colors.white.withOpacity(0.7)),
+                                  Colors.white.withValues(alpha: 0.7)),
                             ),
                           ),
                           const SizedBox(width: 12),

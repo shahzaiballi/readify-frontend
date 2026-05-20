@@ -166,12 +166,12 @@ class _InsightsGridState extends State<InsightsGrid>
           borderRadius:
               BorderRadius.circular(context.responsive.sp(18)),
           border: Border.all(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -183,11 +183,11 @@ class _InsightsGridState extends State<InsightsGrid>
             Container(
               padding: EdgeInsets.all(context.responsive.sp(10)),
               decoration: BoxDecoration(
-                color: iconBg.withOpacity(0.15),
+                color: iconBg.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: iconBg.withOpacity(0.2),
+                    color: iconBg.withValues(alpha: 0.2),
                     blurRadius: 12,
                     spreadRadius: 2,
                   ),
@@ -211,7 +211,7 @@ class _InsightsGridState extends State<InsightsGrid>
             Text(
               label,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
                 fontSize: context.responsive.sp(10),
                 fontWeight: FontWeight.w500,
               ),

@@ -9,7 +9,10 @@ class ApiClient {
   factory ApiClient() => instance;
   ApiClient._internal();
 
-  final String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://127.0.0.1:8000',
+  );
   final _storage = const FlutterSecureStorage();
 
   static const _accessTokenKey = 'access_token';

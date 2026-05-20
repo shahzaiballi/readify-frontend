@@ -65,6 +65,37 @@ class TodayReadingEntity {
   int get todayPageCount => todayPageEnd - todayPageStart + 1;
 }
 
+class TodaySummaryItem {
+  final int chapterNumber;
+  final String chapterTitle;
+  final String mode;
+  final String summaryContent;
+  final List<String> keyTakeaways;
+
+  const TodaySummaryItem({
+    required this.chapterNumber,
+    required this.chapterTitle,
+    required this.mode,
+    required this.summaryContent,
+    required this.keyTakeaways,
+  });
+}
+
+class TodaySummaryResult {
+  final String status;
+  final String readingMode;
+  final List<TodaySummaryItem> summaries;
+
+  const TodaySummaryResult({
+    required this.status,
+    required this.readingMode,
+    required this.summaries,
+  });
+
+  bool get isGenerating => status == 'generating';
+  bool get isReady => status == 'ready';
+}
+
 class TodayCompleteResult {
   final int progressPercent;
   final int pagesReadToday;

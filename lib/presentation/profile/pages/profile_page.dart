@@ -263,7 +263,7 @@ class ProfilePage extends ConsumerWidget {
                                 notificationsEnabledProvider.notifier,
                               )
                               .state = val,
-                          activeColor: const Color(0xFFB062FF),
+                          activeThumbColor: const Color(0xFFB062FF),
                         ),
                       ),
 
@@ -277,7 +277,7 @@ class ProfilePage extends ConsumerWidget {
                           onChanged: (val) => ref
                               .read(darkModeEnabledProvider.notifier)
                               .state = val,
-                          activeColor: const Color(0xFFB062FF),
+                          activeThumbColor: const Color(0xFFB062FF),
                         ),
                       ),
 
@@ -309,7 +309,7 @@ class ProfilePage extends ConsumerWidget {
                               width: 1.5,
                             ),
                             backgroundColor:
-                                Colors.redAccent.withOpacity(0.05),
+                                Colors.redAccent.withValues(alpha: 0.05),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                 context.responsive.sp(12),

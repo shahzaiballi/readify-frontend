@@ -116,7 +116,7 @@ class ChapterListItem extends StatelessWidget {
     return _buildStandardRow(
       iconWidget: Container(
          padding: EdgeInsets.all(context.responsive.sp(10)),
-         decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), shape: BoxShape.circle),
+         decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), shape: BoxShape.circle),
          child: Text('${chapter.chapterNumber}', style: TextStyle(color: Colors.white54, fontSize: context.responsive.sp(12), fontWeight: FontWeight.bold)),
       ),
       titleColor: Colors.white,
@@ -183,7 +183,7 @@ class ChapterListItem extends StatelessWidget {
   Widget _buildIconBox(IconData icon, Color color, BuildContext context) {
      return Container(
          padding: EdgeInsets.all(context.responsive.sp(8)),
-         decoration: BoxDecoration(color: color.withOpacity(0.15), shape: BoxShape.circle),
+         decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
          child: Icon(icon, color: color, size: context.responsive.sp(18)),
      );
   }

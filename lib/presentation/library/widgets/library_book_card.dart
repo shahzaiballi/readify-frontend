@@ -65,12 +65,12 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
             color: const Color(0xFF161B2E),
             borderRadius: BorderRadius.circular(context.responsive.sp(20)),
             border: Border.all(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.withValues(alpha: 0.06),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
+                color: Colors.black.withValues(alpha: 0.25),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -149,7 +149,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                 Text(
                                   widget.book.author,
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.45),
+                                    color: Colors.white.withValues(alpha: 0.45),
                                     fontSize: context.responsive.sp(12),
                                   ),
                                   maxLines: 1,
@@ -169,8 +169,8 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                   padding: EdgeInsets.all(context.responsive.sp(7)),
                                   decoration: BoxDecoration(
                                     color: isFavorite
-                                        ? Colors.redAccent.withOpacity(0.15)
-                                        : Colors.white.withOpacity(0.05),
+                                        ? Colors.redAccent.withValues(alpha: 0.15)
+                                        : Colors.white.withValues(alpha: 0.05),
                                     shape: BoxShape.circle,
                                   ),
                                   child: AnimatedSwitcher(
@@ -196,7 +196,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                 child: Container(
                                   padding: EdgeInsets.all(context.responsive.sp(7)),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -219,7 +219,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           Text(
                             'Progress',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.4),
+                              color: Colors.white.withValues(alpha: 0.4),
                               fontSize: context.responsive.sp(11),
                             ),
                           ),
@@ -239,7 +239,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                           Container(
                             height: context.responsive.sp(4),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.08),
+                              color: Colors.white.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -258,7 +258,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                                 boxShadow: [
                                   BoxShadow(
                                     color:
-                                        const Color(0xFFB062FF).withOpacity(0.4),
+                                        const Color(0xFFB062FF).withValues(alpha: 0.4),
                                     blurRadius: 6,
                                   ),
                                 ],
@@ -368,7 +368,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                         vertical: context.responsive.sp(14),
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(
                           context.responsive.sp(14),
                         ),
@@ -405,7 +405,7 @@ class _LibraryBookCardState extends ConsumerState<LibraryBookCard>
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.redAccent.withOpacity(0.3),
+                            color: Colors.redAccent.withValues(alpha: 0.3),
                             blurRadius: 12,
                           ),
                         ],
@@ -466,9 +466,9 @@ class _StatusBadge extends StatelessWidget {
         vertical: context.responsive.sp(3),
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(context.responsive.sp(6)),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

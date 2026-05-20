@@ -584,9 +584,9 @@ class _ErrorBanner extends StatelessWidget {
         vertical: context.responsive.sp(12),
       ),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
@@ -613,18 +613,18 @@ class _OrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.responsive.wp(14)),
           child: Text(
             'or continue with',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               fontSize: context.responsive.sp(13),
             ),
           ),
         ),
-        Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+        Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
       ],
     );
   }

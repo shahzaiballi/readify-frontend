@@ -27,7 +27,7 @@ class ChunkTimerOverlay extends StatelessWidget {
             child: CircularProgressIndicator(
               value: progress,
               strokeWidth: 3,
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
               valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFB062FF)),
             ),
           ),

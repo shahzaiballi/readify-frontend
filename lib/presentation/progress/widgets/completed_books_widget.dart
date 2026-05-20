@@ -29,7 +29,7 @@ class CompletedBooksWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(context.responsive.sp(12)),
                     border: Border.all(
-                      color: Colors.green.withOpacity(0.3),
+                      color: Colors.green.withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),
@@ -54,7 +54,7 @@ class CompletedBooksWidget extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.7),
+                              Colors.black.withValues(alpha: 0.7),
                             ],
                           ),
                         ),
@@ -69,7 +69,7 @@ class CompletedBooksWidget extends StatelessWidget {
                             vertical: context.responsive.sp(3),
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.8),
+                            color: Colors.green.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(context.responsive.sp(4)),
                           ),
                           child: Icon(

@@ -60,9 +60,9 @@ class _AuthTextFieldState extends State<AuthTextField> {
   }
 
   Color get _borderColor {
-    if (_errorText != null) return Colors.redAccent.withOpacity(0.8);
+    if (_errorText != null) return Colors.redAccent.withValues(alpha: 0.8);
     if (_focused) return const Color(0xFFB062FF);
-    return Colors.white.withOpacity(0.1);
+    return Colors.white.withValues(alpha: 0.1);
   }
 
   @override
@@ -93,7 +93,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
             boxShadow: _focused && _errorText == null
                 ? [
                     BoxShadow(
-                      color: const Color(0xFFB062FF).withOpacity(0.08),
+                      color: const Color(0xFFB062FF).withValues(alpha: 0.08),
                       blurRadius: 10,
                     )
                   ]

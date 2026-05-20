@@ -40,7 +40,7 @@ class _NoBookInProgress extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB062FF).withOpacity(0.15),
+            color: const Color(0xFFB062FF).withValues(alpha: 0.15),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -50,7 +50,7 @@ class _NoBookInProgress extends StatelessWidget {
         children: [
           Icon(
             Icons.auto_stories_outlined,
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             size: ctx.responsive.sp(48),
           ),
           SizedBox(height: ctx.responsive.sp(16)),
@@ -67,7 +67,7 @@ class _NoBookInProgress extends StatelessWidget {
             'Add a book to your library and begin\nyour reading journey today.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: ctx.responsive.sp(13),
               height: 1.5,
             ),
@@ -174,13 +174,13 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFB062FF).withOpacity(0.2),
+                color: const Color(0xFFB062FF).withValues(alpha: 0.2),
                 blurRadius: 30,
                 offset: const Offset(0, 10),
                 spreadRadius: -5,
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -199,7 +199,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        const Color(0xFFB062FF).withOpacity(0.15),
+                        const Color(0xFFB062FF).withValues(alpha: 0.15),
                         Colors.transparent,
                       ],
                     ),
@@ -227,7 +227,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                         Text(
                           'CURRENTLY READING',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: context.responsive.sp(10),
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.5,
@@ -251,7 +251,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                   context.responsive.sp(12)),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color: Colors.black.withValues(alpha: 0.5),
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
                                 ),
@@ -296,7 +296,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                               Text(
                                 'by ${widget.progress.author}',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
+                                  color: Colors.white.withValues(alpha: 0.5),
                                   fontSize: context.responsive.sp(12),
                                 ),
                               ),
@@ -310,7 +310,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                   Text(
                                     'Progress',
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withValues(alpha: 0.5),
                                       fontSize: context.responsive.sp(11),
                                     ),
                                   ),
@@ -330,7 +330,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                   Container(
                                     height: context.responsive.sp(5),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
+                                      color: Colors.white.withValues(alpha: 0.1),
                                       borderRadius:
                                           BorderRadius.circular(10),
                                     ),
@@ -353,7 +353,7 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                         boxShadow: [
                                           BoxShadow(
                                             color: const Color(0xFFB062FF)
-                                                .withOpacity(0.5),
+                                                .withValues(alpha: 0.5),
                                             blurRadius: 6,
                                           ),
                                         ],
@@ -368,14 +368,14 @@ class _CurrentlyReadingCardState extends ConsumerState<CurrentlyReadingCard>
                                   Icon(
                                     Icons.schedule_rounded,
                                     color:
-                                        Colors.greenAccent.withOpacity(0.8),
+                                        Colors.greenAccent.withValues(alpha: 0.8),
                                     size: context.responsive.sp(12),
                                   ),
                                   SizedBox(width: context.responsive.wp(4)),
                                   Text(
                                     '$estimatedDaysLeft days left',
                                     style: TextStyle(
-                                      color: Colors.greenAccent.withOpacity(
+                                      color: Colors.greenAccent.withValues(alpha: 
                                           0.8),
                                       fontSize: context.responsive.sp(11),
                                       fontWeight: FontWeight.w600,
@@ -506,7 +506,7 @@ class _PremiumButtonState extends State<_PremiumButton>
                 BorderRadius.circular(context.responsive.sp(14)),
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -555,22 +555,22 @@ class _GhostButton extends StatelessWidget {
         padding:
             EdgeInsets.symmetric(vertical: context.responsive.sp(12)),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.07),
+          color: Colors.white.withValues(alpha: 0.07),
           borderRadius:
               BorderRadius.circular(context.responsive.sp(12)),
-          border: Border.all(color: Colors.white.withOpacity(0.12)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: context.responsive.sp(15)),
             SizedBox(width: context.responsive.wp(6)),
             Text(
               label,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: context.responsive.sp(12),
                 fontWeight: FontWeight.w500,
               ),

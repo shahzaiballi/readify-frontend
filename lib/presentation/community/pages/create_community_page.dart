@@ -2,7 +2,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -207,7 +206,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
               decoration: BoxDecoration(
                 color: const Color(0xFF161B2E),
                 borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-                border: Border.all(color: Colors.white.withOpacity(0.06)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
               ),
               child: TabBar(
                 controller: _typeTabController,
@@ -303,7 +302,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
             SizedBox(height: context.responsive.sp(20)),
 
             // ── Community Name ─────────────────────────────────────────────
-            _FieldLabel('Community Name', context),
+            _fieldLabel('Community Name', context),
             SizedBox(height: context.responsive.sp(8)),
             _StyledTextField(
               controller: _nameController,
@@ -316,7 +315,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
 
             // ── Book-specific fields ───────────────────────────────────────
             if (_communityType == 'book') ...[
-              _FieldLabel('Book Title', context),
+              _fieldLabel('Book Title', context),
               SizedBox(height: context.responsive.sp(8)),
               _StyledTextField(
                 controller: _bookNameController,
@@ -326,7 +325,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
               ),
               SizedBox(height: context.responsive.sp(12)),
 
-              _FieldLabel('Author (optional)', context),
+              _fieldLabel('Author (optional)', context),
               SizedBox(height: context.responsive.sp(8)),
               _StyledTextField(
                 controller: _bookAuthorController,
@@ -338,7 +337,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
             ],
 
             // ── Description ────────────────────────────────────────────────
-            _FieldLabel('Description (optional)', context),
+            _fieldLabel('Description (optional)', context),
             SizedBox(height: context.responsive.sp(8)),
             _StyledTextField(
               controller: _descController,
@@ -350,7 +349,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
             SizedBox(height: context.responsive.sp(20)),
 
             // ── Privacy ────────────────────────────────────────────────────
-            _FieldLabel('Privacy', context),
+            _fieldLabel('Privacy', context),
             SizedBox(height: context.responsive.sp(10)),
             Row(
               children: [
@@ -379,9 +378,9 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
               Container(
                 padding: EdgeInsets.all(context.responsive.sp(12)),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFB062FF).withOpacity(0.1),
+                  color: const Color(0xFFB062FF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(context.responsive.sp(10)),
-                  border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -408,9 +407,9 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
               Container(
                 padding: EdgeInsets.all(context.responsive.sp(12)),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withOpacity(0.1),
+                  color: Colors.redAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(context.responsive.sp(10)),
-                  border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
+                  border: Border.all(color: Colors.redAccent.withValues(alpha: 0.4)),
                 ),
                 child: Row(
                   children: [
@@ -436,7 +435,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
                 onPressed: isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFB062FF),
-                  disabledBackgroundColor: const Color(0xFFB062FF).withOpacity(0.5),
+                  disabledBackgroundColor: const Color(0xFFB062FF).withValues(alpha: 0.5),
                   padding: EdgeInsets.symmetric(vertical: context.responsive.sp(15)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(context.responsive.sp(12)),
@@ -478,7 +477,7 @@ class _CreateCommunityPageState extends ConsumerState<CreateCommunityPage>
     );
   }
 
-  Widget _FieldLabel(String text, BuildContext context) => Text(
+  Widget _fieldLabel(String text, BuildContext context) => Text(
         text,
         style: TextStyle(
           color: Colors.white70,
@@ -529,7 +528,7 @@ class _ImageSourceSheet extends StatelessWidget {
                 leading: Container(
                   padding: EdgeInsets.all(context.responsive.sp(10)),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFB062FF).withOpacity(0.15),
+                    color: const Color(0xFFB062FF).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(Icons.camera_alt_outlined,
@@ -543,7 +542,7 @@ class _ImageSourceSheet extends StatelessWidget {
                 leading: Container(
                   padding: EdgeInsets.all(context.responsive.sp(10)),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFB062FF).withOpacity(0.15),
+                    color: const Color(0xFFB062FF).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(Icons.photo_library_outlined,
@@ -632,7 +631,7 @@ class _PrivacyOption extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFB062FF).withOpacity(0.12)
+              ? const Color(0xFFB062FF).withValues(alpha: 0.12)
               : const Color(0xFF1A223B),
           borderRadius: BorderRadius.circular(context.responsive.sp(10)),
           border: Border.all(
@@ -710,7 +709,7 @@ class _InviteLinkSheet extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(colors: [Color(0xFFB062FF), Color(0xFF7B3FF2)]),
-              boxShadow: [BoxShadow(color: const Color(0xFFB062FF).withOpacity(0.35), blurRadius: 24, spreadRadius: 4)],
+              boxShadow: [BoxShadow(color: const Color(0xFFB062FF).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 4)],
             ),
             child: Icon(Icons.check_rounded, color: Colors.white, size: context.responsive.sp(36)),
           ),
@@ -734,7 +733,7 @@ class _InviteLinkSheet extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF1A223B),
                 borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-                border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.3)),
+                border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
@@ -756,7 +755,7 @@ class _InviteLinkSheet extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                           horizontal: context.responsive.wp(10), vertical: context.responsive.sp(6)),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFB062FF).withOpacity(0.15),
+                        color: const Color(0xFFB062FF).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(context.responsive.sp(6)),
                       ),
                       child: Text('Copy',

@@ -113,7 +113,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                     borderRadius:
                         BorderRadius.circular(context.responsive.sp(12)),
                     border: Border.all(
-                      color: const Color(0xFFB062FF).withOpacity(0.3),
+                      color: const Color(0xFFB062FF).withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(

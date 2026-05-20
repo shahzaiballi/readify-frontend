@@ -75,28 +75,28 @@ class _QuickActionCardState extends State<QuickActionCard>
           decoration: BoxDecoration(
             // ENHANCED UI: Dynamic border on press
             color: _isPressed
-                ? const Color(0xFF1E233D).withOpacity(0.8)
+                ? const Color(0xFF1E233D).withValues(alpha: 0.8)
                 : const Color(0xFF1E233D),
             borderRadius:
                 BorderRadius.circular(context.responsive.sp(16)),
             border: Border.all(
               color: _isPressed
-                  ? widget.iconColor.withOpacity(0.3)
-                  : Colors.white.withOpacity(0.06),
+                  ? widget.iconColor.withValues(alpha: 0.3)
+                  : Colors.white.withValues(alpha: 0.06),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
                 color: _isPressed
-                    ? widget.iconColor.withOpacity(0.08)
-                    : Colors.black.withOpacity(0.2),
+                    ? widget.iconColor.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
               // ENHANCED UI: Colored shadow for primary action
               if (widget.iconColor == const Color(0xFFB062FF))
                 BoxShadow(
-                  color: widget.iconColor.withOpacity(0.08),
+                  color: widget.iconColor.withValues(alpha: 0.08),
                   blurRadius: 24,
                   spreadRadius: -4,
                   offset: const Offset(0, 8),
@@ -112,13 +112,13 @@ class _QuickActionCardState extends State<QuickActionCard>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      widget.iconColor.withOpacity(0.25),
-                      widget.iconColor.withOpacity(0.1),
+                      widget.iconColor.withValues(alpha: 0.25),
+                      widget.iconColor.withValues(alpha: 0.1),
                     ],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.iconColor.withOpacity(0.2),
+                      color: widget.iconColor.withValues(alpha: 0.2),
                       blurRadius: 12,
                       spreadRadius: 1,
                     ),
@@ -150,7 +150,7 @@ class _QuickActionCardState extends State<QuickActionCard>
                     Text(
                       widget.subtitle,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.45),
+                        color: Colors.white.withValues(alpha: 0.45),
                         fontSize: context.responsive.sp(12),
                       ),
                     ),
@@ -169,7 +169,7 @@ class _QuickActionCardState extends State<QuickActionCard>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.5),
+                        color: Colors.redAccent.withValues(alpha: 0.5),
                         blurRadius: 8,
                         spreadRadius: 1,
                       ),
@@ -193,7 +193,7 @@ class _QuickActionCardState extends State<QuickActionCard>
                     _isPressed ? const Offset(0.15, 0) : Offset.zero,
                 child: Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Colors.white.withOpacity(0.25),
+                  color: Colors.white.withValues(alpha: 0.25),
                   size: context.responsive.sp(14),
                 ),
               ),

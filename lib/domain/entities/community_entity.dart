@@ -6,6 +6,7 @@ class CommunityMemberEntity {
   final String avatarUrl;
   final String memberSince;
   final int booksReading;
+  final bool isAdmin;
 
   const CommunityMemberEntity({
     required this.id,
@@ -13,6 +14,7 @@ class CommunityMemberEntity {
     required this.avatarUrl,
     required this.memberSince,
     required this.booksReading,
+    this.isAdmin = false,
   });
 }
 

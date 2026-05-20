@@ -83,7 +83,7 @@ class _AskYourBookPageState extends ConsumerState<AskYourBookPage> {
                             margin: const EdgeInsets.only(bottom: 8, left: 40),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.greenAccent.withOpacity(0.2),
+                              color: Colors.greenAccent.withValues(alpha: 0.2),
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(16),
                                 topRight: Radius.circular(16),
@@ -106,7 +106,7 @@ class _AskYourBookPageState extends ConsumerState<AskYourBookPage> {
                                 topRight: Radius.circular(16),
                                 bottomRight: Radius.circular(16),
                               ),
-                              border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+                              border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.3)),
                             ),
                             child: Text(msg.answer, style: const TextStyle(color: Colors.white70, fontSize: 15, height: 1.5)),
                           ),

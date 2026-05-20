@@ -52,10 +52,10 @@ class DayCompleteCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: const Color(0xFFB062FF).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFFB062FF).withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB062FF).withOpacity(0.2),
+            color: const Color(0xFFB062FF).withValues(alpha: 0.2),
             blurRadius: 32,
             offset: const Offset(0, 12),
           ),
@@ -80,7 +80,7 @@ class DayCompleteCard extends StatelessWidget {
                   color: (isBookDone
                           ? const Color(0xFFFFD700)
                           : const Color(0xFFB062FF))
-                      .withOpacity(0.35),
+                      .withValues(alpha: 0.35),
                   blurRadius: 24,
                 ),
               ],
@@ -111,7 +111,7 @@ class DayCompleteCard extends StatelessWidget {
           Text(
             'You read $pagesReadToday pages today',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.55),
+              color: Colors.white.withValues(alpha: 0.55),
               fontSize: context.responsive.sp(14),
             ),
             textAlign: TextAlign.center,
@@ -126,10 +126,10 @@ class DayCompleteCard extends StatelessWidget {
                 vertical: context.responsive.sp(7),
               ),
               decoration: BoxDecoration(
-                color: const Color(0xFFB062FF).withOpacity(0.15),
+                color: const Color(0xFFB062FF).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(context.responsive.sp(20)),
                 border: Border.all(
-                    color: const Color(0xFFB062FF).withOpacity(0.35)),
+                    color: const Color(0xFFB062FF).withValues(alpha: 0.35)),
               ),
               child: Text(
                 _milestoneMessage(milestone),
@@ -151,7 +151,7 @@ class DayCompleteCard extends StatelessWidget {
               Text(
                 'Overall Progress',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.45),
+                  color: Colors.white.withValues(alpha: 0.45),
                   fontSize: context.responsive.sp(12),
                 ),
               ),
@@ -171,7 +171,7 @@ class DayCompleteCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress / 100,
               minHeight: context.responsive.sp(8),
-              backgroundColor: Colors.white.withOpacity(0.08),
+              backgroundColor: Colors.white.withValues(alpha: 0.08),
               valueColor:
                   const AlwaysStoppedAnimation<Color>(Color(0xFFB062FF)),
             ),
@@ -183,13 +183,13 @@ class DayCompleteCard extends StatelessWidget {
               Text(
                 '$progress% complete',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.35),
+                    color: Colors.white.withValues(alpha: 0.35),
                     fontSize: context.responsive.sp(11)),
               ),
               Text(
                 isBookDone ? '🏁 Finished' : '$daysRemaining sessions left',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.35),
+                    color: Colors.white.withValues(alpha: 0.35),
                     fontSize: context.responsive.sp(11)),
               ),
             ],
@@ -253,10 +253,10 @@ class DayCompleteCard extends StatelessWidget {
               child: Text(
                 'View chapter list',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.35),
+                  color: Colors.white.withValues(alpha: 0.35),
                   fontSize: context.responsive.sp(13),
                   decoration: TextDecoration.underline,
-                  decorationColor: Colors.white.withOpacity(0.2),
+                  decorationColor: Colors.white.withValues(alpha: 0.2),
                 ),
               ),
             ),
@@ -287,9 +287,9 @@ class _StatChip extends StatelessWidget {
         vertical: context.responsive.sp(10),
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(context.responsive.sp(12)),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -315,7 +315,7 @@ class _StatChip extends StatelessWidget {
                   Text(
                     sublabel!,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.55),
+                      color: Colors.white.withValues(alpha: 0.55),
                       fontSize: context.responsive.sp(11),
                     ),
                     overflow: TextOverflow.ellipsis,

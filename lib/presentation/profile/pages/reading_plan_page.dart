@@ -90,7 +90,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
                                    activeTrackColor: const Color(0xFFB062FF),
                                    inactiveTrackColor: Colors.white12,
                                    thumbColor: const Color(0xFFB062FF),
-                                   overlayColor: const Color(0xFFB062FF).withOpacity(0.2),
+                                   overlayColor: const Color(0xFFB062FF).withValues(alpha: 0.2),
                                    trackHeight: context.responsive.sp(4),
                                 ),
                                 child: Slider(
@@ -259,7 +259,7 @@ class _ReadingPlanPageState extends ConsumerState<ReadingPlanPage> {
            margin: EdgeInsets.only(bottom: context.responsive.sp(12)),
            padding: EdgeInsets.all(context.responsive.sp(16)),
            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFFB062FF).withOpacity(0.15) : const Color(0xFF1E233D),
+              color: isSelected ? const Color(0xFFB062FF).withValues(alpha: 0.15) : const Color(0xFF1E233D),
               borderRadius: BorderRadius.circular(context.responsive.sp(12)),
               border: Border.all(color: isSelected ? const Color(0xFFB062FF) : Colors.transparent, width: 1.5),
            ),
@@ -350,13 +350,13 @@ class _ReadingModeOption extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFFB062FF).withOpacity(0.12)
+              ? const Color(0xFFB062FF).withValues(alpha: 0.12)
               : const Color(0xFF0F1626),
           borderRadius: BorderRadius.circular(context.responsive.sp(10)),
           border: Border.all(
             color: selected
                 ? const Color(0xFFB062FF)
-                : Colors.white.withOpacity(0.08),
+                : Colors.white.withValues(alpha: 0.08),
             width: selected ? 1.5 : 1,
           ),
         ),

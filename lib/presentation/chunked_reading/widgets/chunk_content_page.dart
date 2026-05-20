@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 
 class ChunkContentPage extends StatefulWidget {
   final String text;
@@ -83,7 +82,7 @@ class _ChunkContentPageState extends State<ChunkContentPage> {
                     Icons.auto_awesome,
                     color: _isSimplified
                         ? const Color(0xFFB062FF)
-                        : widget.textColor.withOpacity(0.5),
+                        : widget.textColor.withValues(alpha: 0.5),
                     size: 20,
                   ),
                   onPressed: _triggerSimplify,

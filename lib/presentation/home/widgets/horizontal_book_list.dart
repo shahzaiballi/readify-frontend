@@ -52,11 +52,11 @@ class HorizontalBookList extends StatelessWidget {
                         vertical: context.responsive.sp(3),
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orangeAccent.withOpacity(0.15),
+                        color: Colors.orangeAccent.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(
                             context.responsive.sp(8)),
                         border: Border.all(
-                            color: Colors.orangeAccent.withOpacity(0.3)),
+                            color: Colors.orangeAccent.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -88,11 +88,11 @@ class HorizontalBookList extends StatelessWidget {
                       vertical: context.responsive.sp(6),
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFB062FF).withOpacity(0.12),
+                      color: const Color(0xFFB062FF).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(
                           context.responsive.sp(20)),
                       border: Border.all(
-                        color: const Color(0xFFB062FF).withOpacity(0.25),
+                        color: const Color(0xFFB062FF).withValues(alpha: 0.25),
                       ),
                     ),
                     child: Row(
@@ -260,7 +260,7 @@ class _HorizontalBookCardState extends State<_HorizontalBookCard>
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withOpacity(0.6),
+                              Colors.black.withValues(alpha: 0.6),
                               Colors.transparent,
                             ],
                           ),
@@ -284,7 +284,7 @@ class _HorizontalBookCardState extends State<_HorizontalBookCard>
                                 context.responsive.sp(6)),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.deepOrange.withOpacity(0.4),
+                                color: Colors.deepOrange.withValues(alpha: 0.4),
                                 blurRadius: 8,
                               ),
                             ],
@@ -308,7 +308,7 @@ class _HorizontalBookCardState extends State<_HorizontalBookCard>
                         child: Container(
                           padding: EdgeInsets.all(context.responsive.sp(5)),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withValues(alpha: 0.6),
                             shape: BoxShape.circle,
                             border: Border.all(
                                 color: Colors.white24, width: 0.5),
@@ -344,7 +344,7 @@ class _HorizontalBookCardState extends State<_HorizontalBookCard>
                 Text(
                   widget.book.author,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: context.responsive.sp(11),
                   ),
                   maxLines: 1,

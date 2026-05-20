@@ -115,6 +115,11 @@ class MessagesController extends FamilyNotifier<MessagesState, String> {
   @override
   MessagesState build(String arg) {
     _loadMessages();
+    // Poll every 20 s so new messages from others appear without manual refresh
+    final timer = Timer.periodic(const Duration(seconds: 20), (_) {
+      _loadMessages(silent: true);
+    });
+    ref.onDispose(timer.cancel);
     return const MessagesState(isLoading: true);
   }
 
@@ -155,11 +160,40 @@ class MessagesController extends FamilyNotifier<MessagesState, String> {
   }
 
   Future<void> toggleReaction(String messageId, String emoji) async {
+    // Optimistic update — no full reload, just mutate local state
+    state = state.copyWith(
+      messages: state.messages.map((m) {
+        if (m.id != messageId) return m;
+        final reactions = List<ReactionEntity>.from(m.reactions);
+        final idx = reactions.indexWhere((r) => r.emoji == emoji);
+        if (idx == -1) {
+          reactions.add(ReactionEntity(emoji: emoji, count: 1, reactedByMe: true));
+        } else {
+          final r = reactions[idx];
+          if (r.reactedByMe) {
+            if (r.count <= 1) {
+              reactions.removeAt(idx);
+            } else {
+              reactions[idx] = ReactionEntity(emoji: emoji, count: r.count - 1, reactedByMe: false);
+            }
+          } else {
+            reactions[idx] = ReactionEntity(emoji: emoji, count: r.count + 1, reactedByMe: true);
+          }
+        }
+        return MessageEntity(
+          id: m.id, senderId: m.senderId, senderName: m.senderName,
+          senderAvatarUrl: m.senderAvatarUrl, content: m.content,
+          reactions: reactions, replyTo: m.replyTo, isDeleted: m.isDeleted,
+          isMine: m.isMine, timeLabel: m.timeLabel, createdAt: m.createdAt,
+        );
+      }).toList(),
+    );
+    // Fire API in background; revert if it fails
     try {
-      final repo = ref.read(communityRepositoryProvider);
-      await repo.toggleReaction(messageId, emoji);
+      await ref.read(communityRepositoryProvider).toggleReaction(messageId, emoji);
+    } catch (_) {
       await _loadMessages(silent: true);
-    } catch (_) {}
+    }
   }
 
   Future<void> deleteMessage(String messageId) async {
@@ -323,6 +357,48 @@ class CommunityActionController extends Notifier<CommunityActionState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       return null;
+    }
+  }
+
+  Future<CommunityEntity?> updateCommunity(
+    String communityId, {
+    String? name,
+    String? description,
+    String? coverEmoji,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final updated = await repo.updateCommunity(
+        communityId,
+        name: name,
+        description: description,
+        coverEmoji: coverEmoji,
+      );
+      ref.invalidate(communityDetailProvider(communityId));
+      ref.invalidate(myCommunitiesProvider);
+      state = state.copyWith(isLoading: false);
+      return updated;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return null;
+    }
+  }
+
+  Future<bool> deleteCommunity(String communityId) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.deleteCommunity(communityId);
+      ref.invalidate(myCommunitiesProvider);
+      ref.invalidate(myPrivateCommunitiesProvider);
+      ref.invalidate(publicCommunitiesProvider('general'));
+      ref.invalidate(publicCommunitiesProvider('book'));
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
     }
   }
 }
